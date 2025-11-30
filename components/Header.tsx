@@ -369,7 +369,7 @@ const Header = () => {
                       </div>
                       <div className="text-left">
                         <div className="text-sm text-white font-medium">
-                          {pathname.includes('/developer') ? "Turn on Content Mode" : "Turn on Developer Mode"}
+                          {pathname.includes('/developer') ? "Turn on Developer Mode" : "Turn on Content Mode"}
                         </div>
                       </div>
                     </div>
