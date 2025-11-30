@@ -1,48 +1,31 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import Image from 'next/image';
-import { Calendar, MapPin, Briefcase, GraduationCap } from 'lucide-react';
+import { Calendar, MapPin, Building2, GraduationCap, Briefcase, ChevronRight } from 'lucide-react';
 
-// --- Experience Data ---
-const experiences = [
+// --- Unified Data (Chronological Order: Education First -> Current Job Last) ---
+const timelineData = [
   {
-    type: 'work',
-    role: "Software Engineer",
-    company: "SS Innovations International, Inc.",
-    period: "Apr 2025 - Present",
-    duration: "8 mos",
-    location: "Gurugram · On-site",
-    logo: "/logos/ssi.png", // Ensure this file exists in public/logos/
-    description: "Leading the development of advanced web and mobile applications for the SSI ecosystem.",
+    id: 'education',
+    category: 'Education',
+    role: "Bachelor of Technology",
+    company: "GLA University",
+    period: "Sep 2021 - Aug 2025",
+    location: "Mathura, India",
+    logo: "/logos/gla.jpeg", 
+    description: "Computer Science (AI/ML Specialization)",
     points: [
-      "Lead the development of advanced web and mobile applications that solve real-world problems, adapting seamlessly to organizational needs.",
-      "Spearheaded 'SSI Studios', an all-in-one creative platform consolidating design tools (Logo Editor, Certificate Maker, ID Card generator) into a single ecosystem.",
-      "Engineered a user-friendly interface allowing non-technical staff to create professional-quality visuals in minutes.",
-      "Reduced dependence on external apps and ensured consistent, branded outputs across all SSI activities."
+      "Specialized in Artificial Intelligence and Machine Learning.",
+      "Built a strong foundation in Algorithms, Data Structures, and Software Engineering principles."
     ],
-    tech: ["Next.js", "React Native", "System Design", "Full Stack"]
+    tech: ["AI/ML", "DSA", "System Design"],
+    color: "from-purple-500 to-indigo-500"
   },
   {
-    type: 'internship',
-    role: "Software Engineer Intern",
-    company: "Disney+ Hotstar",
-    period: "Oct 2023 - Mar 2024",
-    duration: "6 mos",
-    location: "Bengaluru · Remote",
-    logo: "/logos/disney.png",
-    description: "Contributed to backend scalability and API development for high-traffic services.",
-    points: [
-      "Supported backend API development for the Messenger Service, implementing audit logging and retry handling.",
-      "Contributed to Offer Service scalability by improving cache loaders and partitioning validations.",
-      "Built parts of the Entitlement SDK, adding API integrations for dynamic CTA rendering based on user entitlements.",
-      "Optimized database queries and wrote scripts to improve Payments Service scalability for high concurrent users."
-    ],
-    tech: ["CI/CD", "Next.js", "Backend API", "Scalability", "Database Optimization"]
-  },
-  {
-    type: 'internship',
+    id: 'medanta',
+    category: 'Experience',
     role: "Intern",
     company: "Medanta",
     period: "May 2023 - Aug 2023",
@@ -51,30 +34,54 @@ const experiences = [
     logo: "/logos/medanta.png",
     description: "Focused on API testing, QA automation, and security compliance.",
     points: [
-      "Performed extensive API testing using Postman to validate data integrity and error handling.",
-      "Managed version control via Git/GitHub to ensure code integrity and seamless collaboration.",
-      "Designed and executed comprehensive manual and automated test cases for healthcare applications.",
-      "Conducted vulnerability assessments and penetration testing to ensure secure handling of patient data."
+      "Performed extensive API testing using Postman to validate data integrity.",
+      "Designed manual and automated test cases for healthcare applications.",
+      "Conducted vulnerability assessments to ensure secure handling of patient data."
     ],
-    tech: ["Postman", "Python", "QA Automation", "Security Testing"]
+    tech: ["Postman", "Python", "QA Automation"],
+    color: "from-red-500 to-orange-500"
+  },
+  {
+    id: 'disney',
+    category: 'Experience',
+    role: "Software Engineer Intern",
+    company: "Disney+ Hotstar",
+    period: "Oct 2023 - Mar 2024",
+    duration: "6 mos",
+    location: "Bengaluru · Remote",
+    logo: "/logos/disney.jpeg",
+    description: "Contributed to backend scalability and API development for high-traffic services.",
+    points: [
+      "Supported backend API development for the Messenger Service.",
+      "Contributed to Offer Service scalability by improving cache loaders.",
+      "Optimized database queries for high concurrent users."
+    ],
+    tech: ["Next.js", "Backend API", "Scalability", "Redis"],
+    color: "from-blue-600 to-cyan-500"
+  },
+  {
+    id: 'ssi',
+    category: 'Experience',
+    role: "Software Engineer",
+    company: "SS Innovations International, Inc.",
+    period: "Apr 2025 - Present",
+    duration: "8 mos",
+    location: "Gurugram · On-site",
+    logo: "/logos/ssi.jpeg",
+    description: "Leading the development of advanced web and mobile applications for the SSI ecosystem.",
+    points: [
+      "Spearheaded 'SSI Studios', an all-in-one creative platform consolidating design tools.",
+      "Engineered a user-friendly interface allowing non-technical staff to create visuals.",
+      "Reduced dependence on external apps and ensured consistent branding."
+    ],
+    tech: ["Next.js", "React Native", "Full Stack", "System Design"],
+    color: "from-emerald-500 to-teal-500",
+    current: true
   }
 ];
 
-const education = {
-  role: "Bachelor of Technology",
-  degree: "Computer Science (AI/ML Specialization)",
-  company: "GLA University",
-  period: "Sep 2021 - Aug 2025",
-  location: "Mathura, India",
-  logo: "/images/gla-logo.png", // Replace if you have a specific education logo
-  points: [
-    "Specialized in Artificial Intelligence and Machine Learning.",
-    "Built a strong foundation in Algorithms, Data Structures, and Software Engineering principles."
-  ]
-};
-
 const Section2 = () => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start center", "end center"]
@@ -87,163 +94,163 @@ const Section2 = () => {
   });
 
   return (
-    <section id="section2" className="relative w-full min-h-screen bg-[#0a0a0a] text-gray-200 py-24 px-4 sm:px-8 font-sans">
+    <section className="relative w-full min-h-screen bg-neutral-950 text-neutral-200 py-32 px-4 sm:px-8 overflow-hidden font-sans">
       
-      {/* Background Subtle Texture */}
-      <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+      {/* Background Ambience */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-purple-900/10 rounded-full blur-[100px]" />
+      </div>
 
-      <div className="max-w-4xl mx-auto relative z-10">
+      <div className="max-w-5xl mx-auto relative z-10">
         
         {/* Section Header */}
-        <div className="mb-16 border-l-4 border-blue-500 pl-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Professional Experience</h2>
-          <p className="text-gray-400 mt-2 text-lg">
-            A track record of building scalable systems and driving technical innovation.
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-24 text-center md:text-left md:pl-8"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tighter mb-4">
+            Professional <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Journey</span>
+          </h2>
+          <p className="text-neutral-400 text-lg max-w-2xl leading-relaxed">
+            From academic foundations to engineering scalable systems for industry leaders.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Timeline Wrapper */}
-        <div ref={containerRef} className="relative space-y-12">
+        {/* Timeline Container */}
+        <div ref={containerRef} className="relative space-y-16 md:space-y-24">
           
-          {/* Static Background Line */}
-          <div className="absolute left-8 top-4 bottom-4 w-0.5 bg-[#222] hidden md:block" />
-
-          {/* Animated Progress Line */}
+          {/* Vertical Lines */}
+          <div className="absolute left-4 md:left-8 top-0 bottom-0 w-[2px] bg-neutral-800" />
           <motion.div 
             style={{ scaleY }}
-            className="absolute left-8 top-4 bottom-4 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-blue-500 origin-top hidden md:block" 
+            className="absolute left-4 md:left-8 top-0 bottom-0 w-[2px] bg-gradient-to-b from-purple-500 via-blue-500 to-emerald-500 origin-top" 
           />
 
-          {/* Experience Cards */}
-          {experiences.map((exp, index) => (
-            <motion.div 
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="relative flex flex-col md:flex-row gap-8 group"
-            >
-              {/* Timeline Node (Desktop) */}
-              <div className="hidden md:flex absolute left-8 -translate-x-1/2 mt-8 items-center justify-center w-4 h-4 rounded-full bg-[#0a0a0a] border-2 border-blue-500 z-10 group-hover:scale-125 transition-transform duration-300">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover:animate-pulse" />
-              </div>
-
-              {/* Logo Column */}
-              <div className="flex-shrink-0 md:w-48 pt-2 flex flex-row md:flex-col items-center md:items-end gap-4 md:text-right md:pr-12">
-                <div className="w-16 h-16 relative bg-white rounded-lg p-2 flex items-center justify-center overflow-hidden border border-gray-800 shadow-sm group-hover:border-blue-500/50 transition-colors">
-                   <Image 
-                     src={exp.logo} 
-                     alt={exp.company}
-                     fill
-                     className="object-contain p-1"
-                   />
-                </div>
-                <div className="hidden md:block">
-                  <div className="font-bold text-white">{exp.period.split(' - ')[0]}</div>
-                  <div className="text-sm text-gray-500">{exp.period.split(' - ')[1]}</div>
-                  <div className="text-xs text-gray-600 mt-1">{exp.duration}</div>
-                </div>
-              </div>
-
-              {/* Content Card */}
-              <div className="flex-1 bg-[#111] border border-[#222] rounded-xl p-6 hover:border-blue-500/30 transition-all duration-300 shadow-xl hover:shadow-blue-500/10">
-                {/* Mobile Date Header */}
-                <div className="md:hidden text-sm text-gray-400 mb-2 font-mono flex items-center gap-2">
-                  <Calendar size={14} /> {exp.period} ({exp.duration})
-                </div>
-
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-white">{exp.role}</h3>
-                    <div className="text-blue-400 font-medium">{exp.company}</div>
-                  </div>
-                  <div className="text-xs text-gray-500 flex items-center gap-1 bg-[#1a1a1a] px-2 py-1 rounded border border-[#333]">
-                    <MapPin size={12} /> {exp.location}
-                  </div>
-                </div>
-
-                <ul className="space-y-3 mb-6">
-                  {exp.points.map((point, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-gray-300 leading-relaxed">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-500/50 flex-shrink-0" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="flex flex-wrap gap-2 border-t border-[#222] pt-4">
-                  {exp.tech.map((skill, i) => (
-                    <span key={i} className="px-2.5 py-1 text-xs font-medium text-gray-400 bg-[#1a1a1a] border border-[#333] rounded-md hover:text-white hover:border-blue-500/50 transition-colors cursor-default">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+          {timelineData.map((item, index) => (
+            <TimelineItem key={item.id} data={item} index={index} />
           ))}
-
-          {/* Education Section Separator */}
-          <div className="relative py-8">
-             <div className="absolute left-0 right-0 top-1/2 h-px bg-[#222]" />
-             <span className="relative z-10 bg-[#0a0a0a] px-4 ml-6 md:ml-auto md:mr-auto md:w-fit text-gray-500 text-sm font-medium uppercase tracking-widest flex items-center gap-2">
-               <GraduationCap size={16} /> Education
-             </span>
-          </div>
-
-          {/* Education Card */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="relative flex flex-col md:flex-row gap-8 group"
-          >
-             {/* Timeline Node (Desktop) */}
-             <div className="hidden md:flex absolute left-8 -translate-x-1/2 mt-8 items-center justify-center w-4 h-4 rounded-full bg-[#0a0a0a] border-2 border-purple-500 z-10 group-hover:scale-125 transition-transform duration-300">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-             </div>
-
-             {/* Logo Column */}
-             <div className="flex-shrink-0 md:w-48 pt-2 flex flex-row md:flex-col items-center md:items-end gap-4 md:text-right md:pr-12">
-                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center text-black font-bold text-xl border border-gray-800 shadow-sm group-hover:border-purple-500/50 transition-colors">
-                   <Image 
-                     src={education.logo}
-                     alt="GLA"
-                     width={40}
-                     height={40}
-                     className="object-contain"
-                   />
-                </div>
-                <div className="hidden md:block">
-                  <div className="font-bold text-white">{education.period.split(' - ')[0]}</div>
-                  <div className="text-sm text-gray-500">{education.period.split(' - ')[1]}</div>
-                </div>
-             </div>
-
-             <div className="flex-1 bg-[#111] border border-[#222] rounded-xl p-6 hover:border-purple-500/30 transition-all duration-300 shadow-xl hover:shadow-purple-500/10">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="text-lg font-bold text-white">{education.degree}</h3>
-                    <div className="text-purple-400 font-medium">{education.company}</div>
-                  </div>
-                  <div className="text-xs text-gray-500 flex items-center gap-1 bg-[#1a1a1a] px-2 py-1 rounded border border-[#333]">
-                    <MapPin size={12} /> {education.location}
-                  </div>
-                </div>
-                <ul className="space-y-2 mt-4">
-                  {education.points.map((point, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-gray-300 leading-relaxed">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-purple-500/50 flex-shrink-0" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-             </div>
-          </motion.div>
 
         </div>
       </div>
     </section>
+  );
+};
+
+const TimelineItem = ({ data, index }: { data: any, index: number }) => {
+  const isEducation = data.category === 'Education';
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="relative pl-12 md:pl-24 group"
+    >
+      {/* Timeline Node */}
+      <div className="absolute left-4 md:left-8 -translate-x-1/2 top-0 flex items-center justify-center">
+        <div className={`w-8 h-8 rounded-full border-4 border-neutral-950 bg-neutral-800 z-10 flex items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover:scale-110 ${data.current ? 'bg-white' : ''}`}>
+           {isEducation ? (
+             <GraduationCap size={14} className={data.current ? 'text-black' : 'text-neutral-400'} />
+           ) : (
+             <Briefcase size={14} className={data.current ? 'text-black' : 'text-neutral-400'} />
+           )}
+        </div>
+        {/* Glowing Halo for current item */}
+        {data.current && (
+           <div className="absolute inset-0 rounded-full bg-emerald-500/50 animate-ping" />
+        )}
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+        
+        {/* Date & Metadata Column (Desktop) */}
+        <div className="hidden md:block w-40 text-right pt-1">
+          <div className="text-xl font-bold text-white tracking-tight">{data.period.split(' - ')[0]}</div>
+          <div className="text-sm text-neutral-500 font-medium mb-1">{data.period.split(' - ')[1]}</div>
+          {data.duration && <div className="text-xs text-neutral-600 uppercase tracking-widest">{data.duration}</div>}
+        </div>
+
+        {/* Content Card */}
+        <div className="flex-1 relative">
+          {/* Card Hover Gradient Background */}
+          <div className={`absolute -inset-0.5 bg-gradient-to-r ${data.color} rounded-2xl opacity-0 group-hover:opacity-20 transition duration-500 blur-lg`} />
+          
+          <div className="relative bg-neutral-900/50 backdrop-blur-md border border-white/10 p-6 md:p-8 rounded-2xl overflow-hidden hover:border-white/20 transition-all duration-300">
+            
+            {/* Header */}
+            <div className="flex justify-between items-start gap-4 mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 md:w-14 md:h-14 relative bg-white rounded-xl flex items-center justify-center p-1 shadow-lg">
+                  <Image 
+                    src={data.logo} 
+                    alt={data.company} 
+                    width={56}
+                    height={56}
+                    className="object-contain w-full h-full"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white">{data.role}</h3>
+                  <div className="flex items-center gap-2 text-neutral-300 font-medium">
+                    {data.company}
+                    {data.current && (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] uppercase font-bold tracking-wider border border-emerald-500/20">
+                            Current
+                        </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Mobile Date (Visible only on small screens) */}
+              <div className="md:hidden text-right">
+                <div className="text-sm font-bold text-neutral-300">{data.period.split(' - ')[0]}</div>
+                <div className="text-xs text-neutral-500">{data.period.split(' - ')[1]}</div>
+              </div>
+            </div>
+
+            {/* Location & Type */}
+            <div className="flex flex-wrap gap-4 text-xs font-medium text-neutral-500 uppercase tracking-wider mb-6">
+              <div className="flex items-center gap-1.5">
+                <MapPin size={14} /> {data.location}
+              </div>
+              {isEducation && (
+                  <div className="flex items-center gap-1.5 text-purple-400/80">
+                    <Building2 size={14} /> Education
+                  </div>
+              )}
+            </div>
+
+            {/* Description Points */}
+            <ul className="space-y-3 mb-8">
+              {data.points.map((point: string, i: number) => (
+                <li key={i} className="flex items-start gap-3 text-sm md:text-base text-neutral-400 leading-relaxed">
+                  <span className={`mt-2 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${data.color} flex-shrink-0`} />
+                  {point}
+                </li>
+              ))}
+            </ul>
+
+            {/* Tech Stack Tags */}
+            <div className="flex flex-wrap gap-2">
+              {data.tech.map((tech: string, i: number) => (
+                <span 
+                  key={i} 
+                  className="px-3 py-1.5 text-xs font-medium text-neutral-300 bg-white/5 border border-white/5 rounded-full hover:bg-white/10 hover:text-white transition-colors cursor-default"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
