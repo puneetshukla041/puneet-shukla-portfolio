@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Volume2, VolumeX, Clapperboard, Sparkles, Film } from 'lucide-react';
+import { Volume2, VolumeX, Sparkles, Sunset } from 'lucide-react';
 
-const Section3 = () => {
+const SectionVrindavan = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
@@ -104,7 +104,7 @@ const Section3 = () => {
 
   return (
     <section
-      id="section-3"
+      id="section-vrindavan"
       ref={sectionRef}
       className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col md:flex-row"
     >
@@ -117,8 +117,8 @@ const Section3 = () => {
       >
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
-            <Clapperboard className="w-10 h-10 text-neutral-600 animate-pulse" />
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping" />
+            <Sparkles className="w-10 h-10 text-neutral-600 animate-pulse" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-teal-500 rounded-full animate-ping" />
           </div>
           <div className="h-[2px] w-48 bg-neutral-900 rounded-full overflow-hidden">
             <div
@@ -127,7 +127,7 @@ const Section3 = () => {
             />
           </div>
           <span className="text-[10px] font-mono tracking-[0.3em] text-neutral-500 uppercase">
-            Loading 16mm Reel {progress}%
+            Awakening Spirit {progress}%
           </span>
         </div>
       </div>
@@ -142,9 +142,9 @@ const Section3 = () => {
               preload="auto"
               onCanPlayThrough={handleVideoLoad}
             >
-              <source src="/videos/heroone.mp4" type="video/mp4" />
+              <source src="/videos/herothree.mp4" type="video/mp4" />
             </video>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-teal-900/10 to-black/30 pointer-events-none" />
             <div
               className={`
                 absolute inset-0 z-30 flex flex-col items-center justify-center text-center pointer-events-none
@@ -165,8 +165,8 @@ const Section3 = () => {
             {!isLoading && (
               <div className="absolute bottom-4 right-4 z-40 flex items-center gap-3 animate-fade-in">
                 <div className="text-right hidden sm:block">
-                    <p className="text-[8px] font-bold tracking-widest text-white/90 uppercase">Audio</p>
-                    <p className="text-[8px] text-white/60 font-mono">STEREO</p>
+                    <p className="text-[8px] font-bold tracking-widest text-white/90 uppercase">Atmosphere</p>
+                    <p className="text-[8px] text-white/60 font-mono">BINAURAL AUDIO</p>
                 </div>
                 <button
                   onClick={toggleSound}
@@ -175,7 +175,7 @@ const Section3 = () => {
                   {isMuted ? (
                     <VolumeX className="w-4 h-4 text-white/70" />
                   ) : (
-                    <Volume2 className="w-4 h-4 text-white hover:text-yellow-400" />
+                    <Volume2 className="w-4 h-4 text-white hover:text-teal-400" />
                   )}
                 </button>
               </div>
@@ -184,33 +184,35 @@ const Section3 = () => {
       </div>
 
       <div className="w-full md:w-[40%] lg:w-[35%] bg-black flex flex-col items-center justify-center p-8 md:p-12 z-20 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-yellow-600/5 blur-[90px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-teal-800/10 blur-[90px] rounded-full pointer-events-none" />
         <div className="relative max-w-sm text-center md:text-left space-y-8 md:space-y-12">
           <div className="flex flex-col items-center md:items-start gap-3 opacity-0 animate-cinematic-fade" style={{ animationDelay: '0.2s' }}>
-             <div className="flex items-center gap-2 text-yellow-600/70">
+             <div className="flex items-center gap-2 text-teal-500/80">
                 <Sparkles className="w-3 h-3" />
-                <span className="text-[9px] font-mono tracking-[0.3em] uppercase">The Divine Play</span>
+                <span className="text-[9px] font-mono tracking-[0.3em] uppercase">Yamuna Ghats</span>
              </div>
              <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white tracking-tight leading-[0.9]">
-               Braj Ki <br/>
-               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-500 to-yellow-700">Holi</span>
+               Vrindavan <br/>
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-200 via-teal-400 to-emerald-500">
+                 Peace
+               </span>
              </h2>
           </div>
           <div className="w-[1px] h-16 bg-gradient-to-b from-transparent via-neutral-700 to-transparent mx-auto md:mx-0 opacity-0 animate-cinematic-grow" style={{ animationDelay: '0.5s' }} />
           
           <p className="text-sm md:text-base font-light leading-relaxed text-neutral-400 opacity-0 animate-cinematic-up font-serif italic" style={{ animationDelay: '0.8s' }}>
-            &quot;In the sacred lanes of Vrindavan, colors aren&apos;t just thrown—they are lived. 
-            Witness the eternal dance where the divine love of Radha and Krishna 
-            dissolves the boundaries between the human and the celestial.&quot;
+            &quot;Away from the chaos, time stands still on the banks of the sacred river. 
+            The gentle rustle of trees and the distant chants create a sanctuary 
+            where the heart finds its eternal rhythm.&quot;
           </p>
 
           <div className="flex items-center justify-center md:justify-start gap-4 opacity-0 animate-cinematic-fade" style={{ animationDelay: '1.2s' }}>
             <div className="flex items-center gap-2 text-neutral-700">
-                <Film className="w-3 h-3" />
-                <span className="text-[9px] tracking-widest uppercase font-bold">CinemaScope</span>
+                <Sunset className="w-3 h-3" />
+                <span className="text-[9px] tracking-widest uppercase font-bold">Golden Hour</span>
             </div>
              <div className="w-1 h-1 bg-neutral-800 rounded-full" />
-             <span className="text-[9px] text-neutral-700 tracking-widest uppercase font-bold">Remastered</span>
+             <span className="text-[9px] text-neutral-700 tracking-widest uppercase font-bold">50mm Prime</span>
           </div>
         </div>
       </div>
@@ -241,4 +243,4 @@ const Section3 = () => {
   );
 };
 
-export default Section3;
+export default SectionVrindavan;
