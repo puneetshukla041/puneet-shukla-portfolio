@@ -236,7 +236,7 @@ const Header = () => {
                     transition={{ duration: 0.2 }}
                     className={`text-xs font-semibold whitespace-nowrap ${isToggled ? "text-blue-400" : "text-white"}`}
                   >
-                    {pathname.includes('/developer') ? "Turn on Content Mode" : "Turn on Developer Mode"}
+                    {pathname.includes('/developer') ? "Turn on Developer Mode" : "Turn on Content Mode"}
                   </motion.span>
                 </AnimatePresence>
               </div>
