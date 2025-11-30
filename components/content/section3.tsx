@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Volume2, VolumeX, Clapperboard, Award } from 'lucide-react';
+import { Volume2, VolumeX, Clapperboard, Award, Sparkles, Film } from 'lucide-react';
 
 const Section3 = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
-  const [isMuted, setIsMuted] = useState(false); // State tracks that we WANT sound on
+  const [isMuted, setIsMuted] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
@@ -39,7 +39,7 @@ const Section3 = () => {
 
       const endTimer = setTimeout(() => {
         setShowIntro(false);
-      }, 6000);
+      }, 6500);
 
       return () => {
         clearTimeout(startTimer);
@@ -55,24 +55,20 @@ const Section3 = () => {
     setProgress(100);
     setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 800);
   };
 
   // ---------------------------------------------------------------------------
-  // 3. AGGRESSIVE SOUND-ON PLAYBACK LOGIC
+  // 3. SOUND LOGIC
   // ---------------------------------------------------------------------------
   const attemptPlay = useCallback(async () => {
     if (videoRef.current) {
       try {
-        // FORCE sound settings every time we try to play
         videoRef.current.volume = 1.0;
         videoRef.current.muted = false;
-
         await videoRef.current.play();
-        setIsMuted(false); // Success: Sound is ON
-      } catch { // Removed the unused error variable
-        console.log("Browser blocked unmuted autoplay. Falling back to muted.");
-        // Fallback: Mute and play so the video doesn't freeze
+        setIsMuted(false);
+      } catch {
         if (videoRef.current) {
           videoRef.current.muted = true;
           await videoRef.current.play();
@@ -89,38 +85,27 @@ const Section3 = () => {
   }, []);
 
   // ---------------------------------------------------------------------------
-  // 4. INTERSECTION OBSERVER (Scroll Detection)
+  // 4. INTERSECTION OBSERVER
   // ---------------------------------------------------------------------------
   useEffect(() => {
     if (isLoading) return;
-
     const currentSectionRef = sectionRef.current;
-
     const observer = new IntersectionObserver(
-        (entries) => {
-          const entry = entries[0];
-          if (entry.isIntersecting) {
-            // User sees the section -> FORCE PLAY WITH SOUND
-            attemptPlay();
-          } else {
-            // User scrolled away -> PAUSE
-            pauseVideo();
-          }
-        },
-        { threshold: 0.5 }
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          attemptPlay();
+        } else {
+          pauseVideo();
+        }
+      },
+      { threshold: 0.5 }
     );
-
-    if (currentSectionRef) {
-      observer.observe(currentSectionRef);
-    }
-
+    if (currentSectionRef) observer.observe(currentSectionRef);
     return () => {
-      if (currentSectionRef) {
-        observer.unobserve(currentSectionRef);
-      }
+      if (currentSectionRef) observer.unobserve(currentSectionRef);
     };
   }, [isLoading, attemptPlay, pauseVideo]);
-
 
   const toggleSound = () => {
     if (videoRef.current) {
@@ -131,12 +116,10 @@ const Section3 = () => {
 
   return (
     <section
-      // Updated id to 'section-3'
       id="section-3"
       ref={sectionRef}
-      className="relative w-full h-screen bg-black overflow-hidden flex items-center justify-center"
+      className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col md:flex-row"
     >
-
       {/* ---------------------------------------------------------------------------
           LOADER OVERLAY
           --------------------------------------------------------------------------- */}
@@ -147,132 +130,160 @@ const Section3 = () => {
           ${isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'}
         `}
       >
-        <div className="flex flex-col items-center gap-4">
-          <Clapperboard className="w-8 h-8 text-neutral-600 animate-pulse" />
-          <div className="h-[1px] w-32 bg-neutral-800">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <Clapperboard className="w-10 h-10 text-neutral-600 animate-pulse" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping" />
+          </div>
+          <div className="h-[2px] w-48 bg-neutral-900 rounded-full overflow-hidden">
             <div
-              className="h-full bg-white transition-all duration-200"
+              className="h-full bg-gradient-to-r from-neutral-500 via-white to-neutral-500 transition-all duration-200"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-[10px] font-mono tracking-widest text-neutral-500">
-            INITIALIZING SCENE {progress}%
+          <span className="text-[10px] font-mono tracking-[0.3em] text-neutral-500 uppercase">
+            Loading 16mm Reel {progress}%
           </span>
         </div>
       </div>
 
       {/* ---------------------------------------------------------------------------
-          VIDEO LAYER
-          The key classes for 16:9 on mobile (full screen with cropping) are:
-          1. Parent div: absolute inset-0 z-0
-          2. Video tag: w-full h-full object-cover
-          These ensure the video fills the screen while maintaining its ratio.
+          LEFT PANEL: VIDEO (STRICT 16:9)
+          - Mobile: Top of stack
+          - Desktop: Left side, vertically centered
           --------------------------------------------------------------------------- */}
-      <div className="absolute inset-0 z-0">
-        <video
-          ref={videoRef}
-          // The object-cover class ensures the video always fills the container while maintaining its 16:9 aspect ratio, cropping the top/bottom as necessary on tall screens.
-          className="w-full h-full object-cover transform-gpu"
-          loop
-          playsInline
-          preload="auto"
-          onCanPlayThrough={handleVideoLoad}
-        >
-          <source src="/videos/heroone.mp4" type="video/mp4" />
-        </video>
-        {/* Darker cinematic overlay for text contrast */}
-        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-      </div>
+      <div className="w-full md:flex-1 bg-black flex items-center justify-center relative border-b md:border-b-0 md:border-r border-white/10">
+        
+        {/* THE 16:9 CONTAINER
+            This wrapper enforces the aspect ratio. 
+            On desktop, it floats in the middle of the black panel.
+        */}
+        <div className="relative w-full aspect-video group bg-neutral-900 overflow-hidden shadow-2xl">
+            
+            <video
+              ref={videoRef}
+              className="w-full h-full object-cover transform-gpu"
+              loop
+              playsInline
+              preload="auto"
+              onCanPlayThrough={handleVideoLoad}
+            >
+              <source src="/videos/heroone.mp4" type="video/mp4" />
+            </video>
 
-      {/* ---------------------------------------------------------------------------
-          DIRECTOR'S INTRO OVERLAY
-          --------------------------------------------------------------------------- */}
-      <div
-        className={`
-          absolute inset-0 z-30 flex flex-col items-center justify-center text-center pointer-events-none
-          transition-all duration-[1000ms] ease-out
-          ${showIntro && !isLoading ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-xl'}
-        `}
-      >
-        <div className="space-y-6">
-          {/* Animated "Directed By" */}
-          <p className="text-xs md:text-sm font-bold tracking-[0.6em] text-yellow-500 uppercase animate-fade-in-slow">
-            A Film Directed By
-          </p>
+            {/* Cinematic Overlay (Inside 16:9 box) */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
 
-          {/* Massive Name */}
-          <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-white tracking-tighter uppercase drop-shadow-2xl animate-scale-slow">
-            PUNEET SHUKLA
-          </h1>
+            {/* DIRECTOR INTRO (Inside 16:9 box) */}
+            <div
+              className={`
+                absolute inset-0 z-30 flex flex-col items-center justify-center text-center pointer-events-none
+                transition-all duration-[1500ms] cubic-bezier(0.19, 1, 0.22, 1)
+                ${showIntro && !isLoading ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-md'}
+              `}
+            >
+               <div className="space-y-2 md:space-y-4 mix-blend-overlay">
+                <p className="text-[8px] md:text-[10px] font-bold tracking-[0.6em] text-white/80 uppercase">
+                    Directed By
+                </p>
+                <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase drop-shadow-xl">
+                  PUNEET SHUKLA
+                </h1>
+              </div>
+            </div>
 
-          <div className="flex items-center justify-center gap-3 animate-fade-in-slow delay-500">
-            <div className="h-[1px] w-12 bg-white/50" />
-            <Award className="w-5 h-5 text-neutral-300" />
-            <div className="h-[1px] w-12 bg-white/50" />
-          </div>
+            {/* CONTROLS (Inside 16:9 box) */}
+            {!isLoading && (
+              <div className="absolute bottom-4 right-4 z-40 flex items-center gap-3 animate-fade-in">
+                <div className="text-right hidden sm:block">
+                    <p className="text-[8px] font-bold tracking-widest text-white/90 uppercase">Audio</p>
+                    <p className="text-[8px] text-white/60 font-mono">STEREO</p>
+                </div>
+                <button
+                  onClick={toggleSound}
+                  className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/30 transition-all duration-300"
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-4 h-4 text-white/70" />
+                  ) : (
+                    <Volume2 className="w-4 h-4 text-white hover:text-yellow-400" />
+                  )}
+                </button>
+              </div>
+            )}
         </div>
       </div>
 
       {/* ---------------------------------------------------------------------------
-          ALWAYS VISIBLE CONTROLS
+          RIGHT PANEL: CINEMATIC TEXT
           --------------------------------------------------------------------------- */}
-      {!isLoading && (
-        <>
-          {/* LEFT: Captured On Card */}
-          <div className="absolute bottom-12 left-8 z-40 animate-fade-in hidden md:block">
-            <div className="flex items-center gap-4 bg-black/40 backdrop-blur-md px-5 py-3 rounded-sm border border-white/10 hover:bg-black/60 transition-colors">
-              <div className="text-left">
-                <div className="text-[10px] text-neutral-400 uppercase tracking-widest mb-1">
-                  Captured On
-                </div>
-                <div className="text-sm font-bold text-white tracking-wider">
-                  SONY ALPHA X DJI
-                </div>
-              </div>
-            </div>
+      <div className="w-full md:w-[40%] lg:w-[35%] bg-black flex flex-col items-center justify-center p-8 md:p-12 z-20 relative overflow-hidden">
+        
+        {/* Background Atmosphere */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-yellow-600/5 blur-[90px] rounded-full pointer-events-none" />
+        
+        {/* Content */}
+        <div className="relative max-w-sm text-center md:text-left space-y-8 md:space-y-12">
+          
+          {/* Tagline */}
+          <div className="flex flex-col items-center md:items-start gap-3 opacity-0 animate-cinematic-fade" style={{ animationDelay: '0.2s' }}>
+             <div className="flex items-center gap-2 text-yellow-600/70">
+                <Sparkles className="w-3 h-3" />
+                <span className="text-[9px] font-mono tracking-[0.3em] uppercase">The Divine Play</span>
+             </div>
+             <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white tracking-tight leading-[0.9]">
+               Braj Ki <br/>
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-500 to-yellow-700">Holi</span>
+             </h2>
           </div>
 
-          {/* RIGHT: Sound Controls */}
-          <div className="absolute bottom-12 right-8 z-40 flex items-center gap-4 animate-fade-in">
-            <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-bold tracking-widest text-white uppercase">Sound Experience</p>
-              <p className="text-[10px] text-neutral-400 font-mono">DOLBY DIGITAL 5.1</p>
+          {/* Divider */}
+          <div className="w-[1px] h-16 bg-gradient-to-b from-transparent via-neutral-700 to-transparent mx-auto md:mx-0 opacity-0 animate-cinematic-grow" style={{ animationDelay: '0.5s' }} />
+
+          {/* Body */}
+          <p className="text-sm md:text-base font-light leading-relaxed text-neutral-400 opacity-0 animate-cinematic-up font-serif italic" style={{ animationDelay: '0.8s' }}>
+            "In the sacred lanes of Vrindavan, colors aren't just thrown—they are lived. 
+            Witness the eternal dance where the divine love of Radha and Krishna 
+            dissolves the boundaries between the human and the celestial."
+          </p>
+
+          {/* Tech Specs */}
+          <div className="flex items-center justify-center md:justify-start gap-4 opacity-0 animate-cinematic-fade" style={{ animationDelay: '1.2s' }}>
+            <div className="flex items-center gap-2 text-neutral-700">
+                <Film className="w-3 h-3" />
+                <span className="text-[9px] tracking-widest uppercase font-bold">CinemaScope</span>
             </div>
-            <button
-              onClick={toggleSound}
-              className="p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 group"
-            >
-              {isMuted ? (
-                <VolumeX className="w-5 h-5 text-white/70 group-hover:text-white" />
-              ) : (
-                <Volume2 className="w-5 h-5 text-white group-hover:text-yellow-400" />
-              )}
-            </button>
+             <div className="w-1 h-1 bg-neutral-800 rounded-full" />
+             <span className="text-[9px] text-neutral-700 tracking-widest uppercase font-bold">Remastered</span>
           </div>
-        </>
-      )}
+          
+        </div>
+      </div>
 
       {/* ---------------------------------------------------------------------------
-          CSS ANIMATIONS
+          ANIMATIONS
           --------------------------------------------------------------------------- */}
       <style>{`
         @keyframes fade-in-slow {
-          0% { opacity: 0; transform: translateY(20px); }
+          0% { opacity: 0; transform: translateY(10px); }
           100% { opacity: 1; transform: translateY(0); }
         }
-        @keyframes scale-slow {
-          0% { transform: scale(0.9); opacity: 0; }
-          100% { transform: scale(1); opacity: 1; }
+        @keyframes cinematic-up {
+          0% { opacity: 0; transform: translateY(30px) scale(0.98); filter: blur(4px); }
+          100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
-        .animate-fade-in-slow {
-          animation: fade-in-slow 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        @keyframes cinematic-fade {
+          0% { opacity: 0; filter: blur(2px); }
+          100% { opacity: 1; filter: blur(0); }
         }
-        .animate-scale-slow {
-          animation: scale-slow 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        @keyframes cinematic-grow {
+          0% { opacity: 0; height: 0px; }
+          100% { opacity: 1; } 
         }
-        .animate-fade-in {
-          animation: fade-in-slow 1s ease-out forwards;
-        }
+        .animate-fade-in { animation: fade-in-slow 1s ease-out forwards; }
+        .animate-cinematic-up { animation: cinematic-up 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-cinematic-fade { animation: cinematic-fade 2s ease-in-out forwards; }
+        .animate-cinematic-grow { animation: cinematic-grow 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
       `}</style>
     </section>
   );
