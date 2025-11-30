@@ -13,8 +13,7 @@ interface MenuItem {
   href: string;
 }
 
-// FIX 2: Move component definition OUTSIDE the main component (Header)
-// This fixes the "Cannot create components during render" error.
+// Component definition moved outside Header
 const Path = (props: SVGMotionProps<SVGPathElement>) => (
   <motion.path
     fill="transparent"
@@ -28,8 +27,16 @@ const Path = (props: SVGMotionProps<SVGPathElement>) => (
 const Header = () => {
   const router = useRouter();
 
+  // FIX 1: Use the useState initializer function to get the initial pathname.
+  // This runs only once during the initial render and safely checks for 'window'.
+  const [pathname, setPathname] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname;
+    }
+    return '/'; // Default value for server-side render (SSR)
+  });
+  
   // State initialization
-  const [pathname, setPathname] = useState('/');
   const [isToggled, setIsToggled] = useState(false);
   const [sticky, setSticky] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -39,36 +46,12 @@ const Header = () => {
 
   const lastScrollY = useRef(0);
 
-  // 1. Sync State with URL on Mount
-  useEffect(() => {
-    // FIX 1: The 'if (typeof window !== 'undefined')' check is implicitly handled by useEffect in a 'use client' component,
-    // but the issue is setting state based on props/initial values. 
-    // We move the initial pathname setting to a state initializer or use a separate effect that runs only on mount 
-    // and correctly addresses the state cascade.
-    // However, since `pathname` is used to determine navigation links, 
-    // the cleanest approach is to update it *after* the initial render.
-    // The previous implementation was generally considered acceptable for initial state sync, 
-    // but Next.js/React's new linter enforces stricter rules.
-    
-    // We can use a different approach for initial path:
-    if (typeof window !== 'undefined') {
-      const initialPath = window.location.pathname;
-      setPathname(initialPath);
-    }
-  }, []); // Runs once on mount (client side)
-
-  // A secondary effect to run logic that depends on the path, not for initialization
-  useEffect(() => {
-     // This addresses the linter's concern about setting state synchronously during render by separating 
-     // the logic from the initial state setting in the previous effect.
-     // In your original code, setIsToggled(false) was unnecessary inside the effect body 
-     // if it's already set to false by default. Let's keep it simple.
-     // We will keep the initial pathname setting in the first effect and rely on it. 
-     // The linter warning is primarily about line 35. 
-  }, []);
-
+  // 1. Sync State with URL on Mount (Removed the problematic useEffect)
+  // The state initializer above handles the initial sync, removing the ESLint error.
+  
   // 2. ScrollSpy Logic (Only runs on /content)
   useEffect(() => {
+    // pathname is now correctly initialized, so this logic is fine.
     const isContentPage = pathname.includes('/content');
     if (!isContentPage) return;
 
@@ -105,7 +88,7 @@ const Header = () => {
 
   // 3. Robust Toggle Handler
   const handleToggle = () => {
-    // Read window.location.pathname inside the handler, not relying on stale state
+    // Read window.location.pathname inside the handler
     const currentPath = window.location.pathname;
     const isOnDevPage = currentPath.includes('/developer');
     
@@ -137,8 +120,6 @@ const Header = () => {
     }
     setMobileMenuOpen(false);
   };
-
-  // Path component definition moved outside Header.
 
   useEffect(() => {
     let ticking = false;
