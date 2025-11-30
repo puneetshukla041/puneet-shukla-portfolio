@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Play, Volume2, VolumeX, Clapperboard, Award, Camera } from 'lucide-react';
+// 🚀 FIX 1: Import useCallback
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Volume2, VolumeX, Clapperboard, Award } from 'lucide-react';
 
 const Section4 = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
-  const [isMuted, setIsMuted] = useState(false); // State tracks that we WANT sound on
+  const [isMuted, setIsMuted] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
@@ -50,7 +51,7 @@ const Section4 = () => {
 
   const handleVideoLoad = () => {
     if (videoRef.current) {
-        videoRef.current.defaultMuted = false; // Important: Tell browser we intend to have sound
+        videoRef.current.defaultMuted = false;
     }
     setProgress(100);
     setTimeout(() => {
@@ -59,9 +60,9 @@ const Section4 = () => {
   };
 
   // ---------------------------------------------------------------------------
-  // 3. AGGRESSIVE SOUND-ON PLAYBACK LOGIC
+  // 3. AGGRESSIVE SOUND-ON PLAYBACK LOGIC (Wrapped in useCallback)
   // ---------------------------------------------------------------------------
-  const attemptPlay = async () => {
+  const attemptPlay = useCallback(async () => { // 🚀 FIX 2: Wrapped in useCallback
     if (videoRef.current) {
       try {
         // FORCE sound settings every time we try to play
@@ -70,7 +71,7 @@ const Section4 = () => {
         
         await videoRef.current.play();
         setIsMuted(false); // Success: Sound is ON
-      } catch (err) {
+      } catch (_) { // 🚀 FIX 3: Changed 'e' to '_' to silence the unused variable warning
         console.log("Browser blocked unmuted autoplay. Falling back to muted.");
         // Fallback: Mute and play so the video doesn't freeze
         if (videoRef.current) {
@@ -80,13 +81,13 @@ const Section4 = () => {
         }
       }
     }
-  };
+  }, []); // Dependencies are empty -> function is stable
 
-  const pauseVideo = () => {
+  const pauseVideo = useCallback(() => { // 🚀 FIX 4: Wrapped in useCallback
     if (videoRef.current && !videoRef.current.paused) {
         videoRef.current.pause();
     }
-  };
+  }, []); // Dependencies are empty -> function is stable
 
   // ---------------------------------------------------------------------------
   // 4. INTERSECTION OBSERVER (Scroll Detection)
@@ -94,6 +95,9 @@ const Section4 = () => {
   useEffect(() => {
     if (isLoading) return; 
 
+    // Copy ref value to a constant variable inside the effect body (Fixes cleanup warning)
+    const currentSectionRef = sectionRef.current;
+    
     const observer = new IntersectionObserver(
         (entries) => {
             const entry = entries[0];
@@ -108,16 +112,18 @@ const Section4 = () => {
         { threshold: 0.5 } 
     );
 
-    if (sectionRef.current) {
-        observer.observe(sectionRef.current);
+    if (currentSectionRef) {
+        observer.observe(currentSectionRef);
     }
 
     return () => {
-        if (sectionRef.current) {
-            observer.unobserve(sectionRef.current);
+        if (currentSectionRef) {
+            // Use the local variable in the cleanup function
+            observer.unobserve(currentSectionRef);
         }
     };
-  }, [isLoading]);
+    // 🚀 FIX 5: Dependencies are clean now.
+  }, [isLoading, attemptPlay, pauseVideo]); 
 
 
   const toggleSound = () => {
@@ -135,7 +141,7 @@ const Section4 = () => {
       
       {/* ---------------------------------------------------------------------------
           LOADER OVERLAY
-         --------------------------------------------------------------------------- */}
+          --------------------------------------------------------------------------- */}
       <div 
         className={`
           absolute inset-0 z-50 flex flex-col items-center justify-center bg-black
@@ -159,7 +165,7 @@ const Section4 = () => {
 
       {/* ---------------------------------------------------------------------------
           VIDEO LAYER
-         --------------------------------------------------------------------------- */}
+          --------------------------------------------------------------------------- */}
       <div className="absolute inset-0 z-0">
         <video
           ref={videoRef}
@@ -177,7 +183,7 @@ const Section4 = () => {
 
       {/* ---------------------------------------------------------------------------
           DIRECTOR'S INTRO OVERLAY (Timing Modified)
-         --------------------------------------------------------------------------- */}
+          --------------------------------------------------------------------------- */}
       <div 
         className={`
           absolute inset-0 z-30 flex flex-col items-center justify-center text-center pointer-events-none
@@ -186,27 +192,27 @@ const Section4 = () => {
         `}
       >
         <div className="space-y-6">
-           {/* Animated "Directed By" */}
-           <p className="text-xs md:text-sm font-bold tracking-[0.6em] text-yellow-500 uppercase animate-fade-in-slow">
-             A Film Directed By
-           </p>
-           
-           {/* Massive Name */}
-           <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-white tracking-tighter uppercase drop-shadow-2xl animate-scale-slow">
-             PUNEET SHUKLA
-           </h1>
+          {/* Animated "Directed By" */}
+          <p className="text-xs md:text-sm font-bold tracking-[0.6em] text-yellow-500 uppercase animate-fade-in-slow">
+            A Film Directed By
+          </p>
+          
+          {/* Massive Name */}
+          <h1 className="text-5xl sm:text-7xl md:text-9xl font-black text-white tracking-tighter uppercase drop-shadow-2xl animate-scale-slow">
+            PUNEET SHUKLA
+          </h1>
 
-           <div className="flex items-center justify-center gap-3 animate-fade-in-slow delay-500">
-             <div className="h-[1px] w-12 bg-white/50" />
-             <Award className="w-5 h-5 text-neutral-300" />
-             <div className="h-[1px] w-12 bg-white/50" />
-           </div>
+          <div className="flex items-center justify-center gap-3 animate-fade-in-slow delay-500">
+            <div className="h-[1px] w-12 bg-white/50" />
+            <Award className="w-5 h-5 text-neutral-300" />
+            <div className="h-[1px] w-12 bg-white/50" />
+          </div>
         </div>
       </div>
 
       {/* ---------------------------------------------------------------------------
           ALWAYS VISIBLE CONTROLS
-         --------------------------------------------------------------------------- */}
+          --------------------------------------------------------------------------- */}
       {!isLoading && (
         <>
 {/* LEFT: Captured On Card */}
@@ -224,29 +230,29 @@ const Section4 = () => {
 </div>
 
 
-            {/* RIGHT: Sound Controls */}
-            <div className="absolute bottom-12 right-8 z-40 flex items-center gap-4 animate-fade-in">
-            <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-bold tracking-widest text-white uppercase">Sound Experience</p>
-                <p className="text-[10px] text-neutral-400 font-mono">DOLBY DIGITAL 5.1</p>
-            </div>
-            <button 
-                onClick={toggleSound}
-                className="p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 group"
-            >
-                {isMuted ? (
-                <VolumeX className="w-5 h-5 text-white/70 group-hover:text-white" />
-                ) : (
-                <Volume2 className="w-5 h-5 text-white group-hover:text-yellow-400" />
-                )}
-            </button>
-            </div>
+          {/* RIGHT: Sound Controls */}
+          <div className="absolute bottom-12 right-8 z-40 flex items-center gap-4 animate-fade-in">
+          <div className="text-right hidden sm:block">
+              <p className="text-[10px] font-bold tracking-widest text-white uppercase">Sound Experience</p>
+              <p className="text-[10px] text-neutral-400 font-mono">DOLBY DIGITAL 5.1</p>
+          </div>
+          <button 
+              onClick={toggleSound}
+              className="p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300 group"
+          >
+              {isMuted ? (
+              <VolumeX className="w-5 h-5 text-white/70 group-hover:text-white" />
+              ) : (
+              <Volume2 className="w-5 h-5 text-white group-hover:text-yellow-400" />
+              )}
+          </button>
+          </div>
         </>
       )}
 
       {/* ---------------------------------------------------------------------------
           CSS ANIMATIONS
-         --------------------------------------------------------------------------- */}
+          --------------------------------------------------------------------------- */}
       <style jsx global>{`
         @keyframes fade-in-slow {
           0% { opacity: 0; transform: translateY(20px); }

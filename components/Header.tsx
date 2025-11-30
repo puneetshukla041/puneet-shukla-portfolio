@@ -1,15 +1,56 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation'; // Added for navigation
+import Link from 'next/link'; // Added for internal links
+import Image from 'next/image'; // Added for image optimization
 import { motion, AnimatePresence, SVGMotionProps } from 'framer-motion';
 import { Instagram, Linkedin, Github, ChevronRight, Code2, Palette } from 'lucide-react';
 
+// Define Interface for Menu Items
+interface MenuItem {
+  title: string;
+  href: string;
+}
+
+// 🐛 FIX: Move Path component outside of the main functional component (Header)
+const Path = (props: SVGMotionProps<SVGPathElement>) => (
+  <motion.path
+    fill="transparent"
+    strokeWidth="2.5"
+    stroke="white"
+    strokeLinecap="round"
+    {...props}
+  />
+);
+
+// Helper function to safely get client-side state during initialization
+const getInitialPathState = () => {
+  if (typeof window !== 'undefined') {
+    const currentPath = window.location.pathname;
+    return {
+      pathname: currentPath,
+      isToggled: currentPath.includes('/developer'),
+    };
+  }
+  return {
+    pathname: '/',
+    isToggled: false,
+  };
+};
+
 const Header = () => {
-  // State initialization
-  const [pathname, setPathname] = useState('/');
-  const [isToggled, setIsToggled] = useState(false);
+  const router = useRouter();
+
+  // 1. 🚀 FIX: State Initialization (Replaced old useEffect 1)
+  const initialState = getInitialPathState();
+  const [pathname, setPathname] = useState(initialState.pathname);
+  // We use the derived value from initialState, but default to false for simple consistency,
+  // or use the derived value if the toggle state needs to reflect the initial URL immediately.
+  // We'll stick to 'false' initialization as the toggle state is usually derived/managed elsewhere.
+  const [isToggled, setIsToggled] = useState(initialState.isToggled);
+  
   const [sticky, setSticky] = useState(false);
-  const [headerVisible, setHeaderVisible] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // New State for Scrollspy
@@ -17,14 +58,7 @@ const Header = () => {
 
   const lastScrollY = useRef(0);
 
-  // 1. Sync State with URL on Mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const currentPath = window.location.pathname;
-      setPathname(currentPath);
-      setIsToggled(false);
-    }
-  }, []);
+  // ⚠️ Removed the faulty useEffect block (lines 44-49) entirely.
 
   // 2. ScrollSpy Logic (Only runs on /content)
   useEffect(() => {
@@ -70,20 +104,18 @@ const Header = () => {
     
     setTimeout(() => {
       if (isOnDevPage) {
-        window.location.href = '/content';
+        router.push('/content');
       } else {
-        window.location.href = '/developer';
+        router.push('/developer');
       }
     }, 400);
   };
 
   // 4. Navigation Handler
-  const handleLinkClick = (e: React.MouseEvent, item: any) => {
-    e.preventDefault();
-    setMobileMenuOpen(false);
-
-    // If it's an anchor link (starts with #)
+  const handleLinkClick = (e: React.MouseEvent, item: MenuItem) => {
+    // If it's an anchor link (starts with #), we handle scroll manually
     if (item.href.startsWith('#')) {
+      e.preventDefault();
       const elementId = item.href.substring(1);
       const element = document.getElementById(elementId);
       if (element) {
@@ -91,23 +123,12 @@ const Header = () => {
         setActiveSection(item.title); // Immediate UI update
       }
     } else {
-      // Standard page navigation
-      setPathname(item.href);
-      if (window.location.pathname !== item.href) {
-        window.location.href = item.href;
-      }
+        // For standard pages, let Next/Link handle it, 
+        // but we update state for UI feedback
+        setPathname(item.href);
     }
+    setMobileMenuOpen(false);
   };
-
-  const Path = (props: SVGMotionProps<SVGPathElement>) => (
-    <motion.path
-      fill="transparent"
-      strokeWidth="2.5"
-      stroke="white"
-      strokeLinecap="round"
-      {...props}
-    />
-  );
 
   useEffect(() => {
     let ticking = false;
@@ -116,7 +137,6 @@ const Header = () => {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
           setSticky(currentScrollY > 20);
-          setHeaderVisible(true);
           lastScrollY.current = currentScrollY;
           ticking = false;
         });
@@ -129,7 +149,7 @@ const Header = () => {
   }, []);
 
   // --- MENU CONFIGURATION ---
-  const developerMenuItems = [
+  const developerMenuItems: MenuItem[] = [
     { title: 'Home', href: '/' },
     { title: 'Gallery', href: '/gallery' },
     { title: 'Films', href: '/films' },
@@ -138,8 +158,7 @@ const Header = () => {
   ];
 
   // Specific menu for /content page
-  // Note: 'Films' links to section-3 start, but highlights for 3 & 4
-  const contentMenuItems = [
+  const contentMenuItems: MenuItem[] = [
     { title: 'Home', href: '#section-1' },
     { title: 'Gallery', href: '#section-2' },
     { title: 'Films', href: '#section-3' }, 
@@ -149,7 +168,7 @@ const Header = () => {
   const currentMenuItems = pathname.includes('/content') ? contentMenuItems : developerMenuItems;
 
   // Helper to check active state
-  const isItemActive = (item: any) => {
+  const isItemActive = (item: MenuItem) => {
     if (pathname.includes('/content')) {
       return activeSection === item.title;
     }
@@ -172,16 +191,19 @@ const Header = () => {
       >
         <div className="max-w-7xl mx-auto px-6 h-[70px] flex items-center justify-between">
           
-          <div className="flex-shrink-0 z-50 cursor-pointer" onClick={() => window.location.href = '/'}>
-            <a href="/" className="block relative group">
+          <div className="flex-shrink-0 z-50 cursor-pointer">
+            <Link href="/" className="block relative group">
               <div className="relative flex items-center">
-                 <img 
+                 <Image 
                     src="/images/logo.png" 
                     alt="Logo" 
+                    width={150} // Adjust width to match your actual image aspect ratio
+                    height={40} // Adjust height to match your actual image aspect ratio
                     className="h-10 w-auto object-contain transition-opacity duration-300 group-hover:opacity-80" 
+                    priority // Ensures logo loads immediately
                  />
               </div>
-            </a>
+            </Link>
           </div>
 
           <nav className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -189,7 +211,7 @@ const Header = () => {
               {currentMenuItems.map((item) => {
                 const isActive = isItemActive(item);
                 return (
-                  <a
+                  <Link
                     key={item.title}
                     href={item.href}
                     onClick={(e) => handleLinkClick(e, item)}
@@ -205,7 +227,7 @@ const Header = () => {
                       />
                     )}
                     <span className="relative z-10">{item.title}</span>
-                  </a>
+                  </Link>
                 );
               })}
             </div>
@@ -267,9 +289,15 @@ const Header = () => {
             backdropFilter: (sticky || mobileMenuOpen) ? 'blur(16px)' : 'none',
           }}
         >
-          <a href="/" className="z-50 relative">
-             <img src="/images/logo.png" alt="Logo" className="h-8 w-auto object-contain" />
-          </a>
+          <Link href="/" className="z-50 relative">
+             <Image 
+                src="/images/logo.png" 
+                alt="Logo" 
+                width={120} 
+                height={32}
+                className="h-8 w-auto object-contain" 
+             />
+          </Link>
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -321,14 +349,14 @@ const Header = () => {
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.1 + idx * 0.05 }}
                   >
-                    <a
+                    <Link
                       href={item.href}
                       onClick={(e) => handleLinkClick(e, item)}
                       className={`group flex items-center justify-between p-4 rounded-xl border active:scale-95 transition-all cursor-pointer ${isItemActive(item) ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/5'}`}
                     >
                       <span className={`text-xl font-medium tracking-wide ${isItemActive(item) ? 'text-white' : 'text-white/70'}`}>{item.title}</span>
                       <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                    </a>
+                    </Link>
                   </motion.div>
                 ))}
               </nav>

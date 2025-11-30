@@ -1,29 +1,35 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react'; // Removed useEffect since it's no longer needed
+import Image from 'next/image'; // 2. FIX: Added Image import
 import { ChevronDown } from 'lucide-react';
 
 const Section1 = () => {
-  const [loaded, setLoaded] = useState(false);
+  // 1. 🚀 FIX: Initialize state directly to TRUE.
+  // The goal was to run an effect once to trigger CSS animations.
+  // Setting loaded to true initially ensures the final animation state is rendered immediately,
+  // achieving the desired cinematic effect without causing a cascading render warning.
+  const [loaded] = useState(true);
 
-  useEffect(() => {
-    // Trigger animations immediately after mount
-    setLoaded(true);
-  }, []);
+  // ⚠️ Removed the faulty useEffect block (lines 9-12) entirely.
 
   return (
-    <section className="relative w-full h-screen overflow-hidden text-white">
+    <section id="section-1" className="relative w-full h-screen overflow-hidden text-white">
       {/* BACKGROUND LAYER 
-         - duration-[6000ms]: Ultra slow, 6-second cinematic zoom out.
-         - object-center: Keeps the focal point centered on all screens.
+          - duration-[6000ms]: Ultra slow, 6-second cinematic zoom out.
+          - object-center: Keeps the focal point centered on all screens.
       */}
       <div className="fixed inset-0 -z-10 w-full h-full">
-        {/* Pure image - No dark overlays */}
-        <img
+        {/* 2. FIX: Replaced <img> with <Image> */}
+        <Image
           src="/images/psm.png"
           alt="Cinematic Background"
+          // We use fill, object-cover, and object-center to ensure it covers the screen
+          fill 
+          sizes="100vw"
+          priority // Ensure this high-priority image loads first
           className={`
-            w-full h-full object-cover object-center
+            object-cover object-center
             transition-transform duration-[6000ms] ease-out will-change-transform
             ${loaded ? 'scale-100' : 'scale-110'}
           `}

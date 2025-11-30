@@ -30,7 +30,7 @@ const Section5 = () => {
   };
 
   return (
-    <section className="relative w-full min-h-screen bg-neutral-950 text-white flex flex-col justify-between pt-24 sm:pt-40 pb-12 overflow-hidden">
+    <section id="section-5" className="relative w-full min-h-screen bg-neutral-950 text-white flex flex-col justify-between pt-24 sm:pt-40 pb-12 overflow-hidden">
       
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -68,7 +68,7 @@ const Section5 = () => {
                 </span>
               </div>
               <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter uppercase leading-[0.9]">
-                Let's Create <br />
+                Let&apos;s Create <br /> {/* FIX: Escaped the apostrophe */}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-500 to-neutral-700">
                   Something Iconic
                 </span>
@@ -116,6 +116,8 @@ const Section5 = () => {
                   <a 
                     key={idx} 
                     href={social.link} 
+                    target="_blank"
+                    rel="noreferrer"
                     className="group flex flex-col items-center gap-2 cursor-pointer"
                   >
                     <div className="p-3 sm:p-4 border border-neutral-800 rounded-full group-hover:border-white group-hover:bg-white transition-all duration-300">
@@ -137,16 +139,16 @@ const Section5 = () => {
             className="w-full lg:w-1/2 bg-neutral-900/30 border border-neutral-800 backdrop-blur-md rounded-sm min-h-[600px] relative overflow-hidden flex flex-col"
           >
              <AnimatePresence mode="wait">
-                {status === 'success' ? (
-                   /* SUCCESS STATE */
-                   <motion.div
-                    key="success"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5, ease: "circOut" }}
-                    className="flex-grow flex flex-col items-center justify-center text-center p-12 space-y-6"
-                   >
+                 {status === 'success' ? (
+                    /* SUCCESS STATE */
+                    <motion.div
+                     key="success"
+                     initial={{ opacity: 0, scale: 0.95 }}
+                     animate={{ opacity: 1, scale: 1 }}
+                     exit={{ opacity: 0 }}
+                     transition={{ duration: 0.5, ease: "circOut" }}
+                     className="flex-grow flex flex-col items-center justify-center text-center p-12 space-y-6"
+                    >
                       <motion.div 
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
@@ -165,140 +167,141 @@ const Section5 = () => {
                       >
                         Send Another Message
                       </button>
-                   </motion.div>
+                    </motion.div>
                 ) : (
-                   /* FORM STATE */
-                   <motion.div
-                    key="form"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0, filter: "blur(10px)" }}
-                    transition={{ duration: 0.5 }}
-                    className="p-6 sm:p-12 h-full flex flex-col"
-                   >
-                    <h3 className="text-xl sm:text-2xl font-light tracking-wide mb-8 sm:mb-10 text-white">
-                      Project Inquiry
-                    </h3>
+                    /* FORM STATE */
+                    <motion.div
+                     key="form"
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0, filter: "blur(10px)" }}
+                     transition={{ duration: 0.5 }}
+                     className="p-6 sm:p-12 h-full flex flex-col"
+                    >
+                      <h3 className="text-xl sm:text-2xl font-light tracking-wide mb-8 sm:mb-10 text-white">
+                        Project Inquiry
+                      </h3>
 
-                    <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10 flex-grow">
-                      
-                      {/* Name Input */}
-                      <div className="relative group">
-                        <input 
-                          required
-                          type="text" 
-                          name="name"
-                          value={formState.name}
-                          onChange={(e) => setFormState({...formState, name: e.target.value})}
-                          placeholder=" "
-                          className={`block py-4 px-0 w-full text-base sm:text-lg text-white bg-transparent border-0 border-b appearance-none focus:outline-none focus:ring-0 transition-colors duration-300 ${isFocused === 'name' ? 'border-yellow-600' : 'border-neutral-700'}`}
-                          onFocus={() => handleFocus('name')}
-                          onBlur={handleBlur}
-                        />
-                        <label className={`absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 ${isFocused === 'name' || formState.name ? 'text-yellow-600' : 'text-neutral-500'}`}>
-                          Your Name *
-                        </label>
-                      </div>
-
-                      {/* Email Input */}
-                      <div className="relative group">
-                        <input 
-                          required
-                          type="email" 
-                          name="email"
-                          value={formState.email}
-                          onChange={(e) => setFormState({...formState, email: e.target.value})}
-                          placeholder=" "
-                          className={`block py-4 px-0 w-full text-base sm:text-lg text-white bg-transparent border-0 border-b appearance-none focus:outline-none focus:ring-0 transition-colors duration-300 ${isFocused === 'email' ? 'border-yellow-600' : 'border-neutral-700'}`}
-                          onFocus={() => handleFocus('email')}
-                          onBlur={handleBlur}
-                        />
-                        <label className={`absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 ${isFocused === 'email' || formState.email ? 'text-yellow-600' : 'text-neutral-500'}`}>
-                          Email Address *
-                        </label>
-                      </div>
-
-                      {/* Project Type Grid */}
-                      <div className="space-y-4">
-                        <span className="text-xs uppercase tracking-widest text-neutral-500">Interest</span>
-                        <div className="flex flex-wrap gap-2 sm:gap-3">
-                          {projectTypes.map((type) => (
-                            <button
-                              type="button"
-                              key={type}
-                              onClick={() => setFormState({ ...formState, type: type })}
-                              className={`px-3 py-2 sm:px-4 sm:py-2 text-[10px] sm:text-xs uppercase tracking-wider border transition-all duration-300 ${
-                                formState.type === type 
-                                ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' 
-                                : 'bg-transparent text-neutral-400 border-neutral-800 hover:border-neutral-600'
-                              }`}
-                            >
-                              {type}
-                            </button>
-                          ))}
+                      <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10 flex-grow">
+                        
+                        {/* Name Input */}
+                        <div className="relative group">
+                          <input 
+                            required
+                            type="text" 
+                            name="name"
+                            value={formState.name}
+                            onChange={(e) => setFormState({...formState, name: e.target.value})}
+                            placeholder=" "
+                            className={`block py-4 px-0 w-full text-base sm:text-lg text-white bg-transparent border-0 border-b appearance-none focus:outline-none focus:ring-0 transition-colors duration-300 ${isFocused === 'name' ? 'border-yellow-600' : 'border-neutral-700'}`}
+                            onFocus={() => handleFocus('name')}
+                            onBlur={handleBlur}
+                          />
+                          <label className={`absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 ${isFocused === 'name' || formState.name ? 'text-yellow-600' : 'text-neutral-500'}`}>
+                            Your Name *
+                          </label>
                         </div>
-                      </div>
 
-                      {/* Message Input */}
-                      <div className="relative group pt-4">
-                        <textarea 
-                          name="message"
-                          rows={3}
-                          value={formState.message}
-                          onChange={(e) => setFormState({...formState, message: e.target.value})}
-                          placeholder=" "
-                          className={`block py-4 px-0 w-full text-base sm:text-lg text-white bg-transparent border-0 border-b appearance-none focus:outline-none focus:ring-0 transition-colors duration-300 resize-none ${isFocused === 'message' ? 'border-yellow-600' : 'border-neutral-700'}`}
-                          onFocus={() => handleFocus('message')}
-                          onBlur={handleBlur}
-                        />
-                        <label className={`absolute text-sm duration-300 transform -translate-y-6 scale-75 top-7 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 ${isFocused === 'message' || formState.message ? 'text-yellow-600' : 'text-neutral-500'}`}>
-                          Tell me about your project
-                        </label>
-                      </div>
+                        {/* Email Input */}
+                        <div className="relative group">
+                          <input 
+                            required
+                            type="email" 
+                            name="email"
+                            value={formState.email}
+                            onChange={(e) => setFormState({...formState, email: e.target.value})}
+                            placeholder=" "
+                            className={`block py-4 px-0 w-full text-base sm:text-lg text-white bg-transparent border-0 border-b appearance-none focus:outline-none focus:ring-0 transition-colors duration-300 ${isFocused === 'email' ? 'border-yellow-600' : 'border-neutral-700'}`}
+                            onFocus={() => handleFocus('email')}
+                            onBlur={handleBlur}
+                          />
+                          <label className={`absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 ${isFocused === 'email' || formState.email ? 'text-yellow-600' : 'text-neutral-500'}`}>
+                            Email Address *
+                          </label>
+                        </div>
 
-                      {/* Animated Submit Button */}
-                      <button 
-                        disabled={status === 'loading'}
-                        type="submit"
-                        className="group relative w-full flex items-center justify-center gap-4 py-4 sm:py-5 bg-neutral-800 text-white uppercase tracking-[0.2em] text-xs sm:text-sm font-bold overflow-hidden transition-all duration-500 hover:bg-neutral-700 disabled:opacity-70 disabled:cursor-not-allowed mt-auto"
-                      >
-                         <AnimatePresence mode="wait">
-                           {status === 'loading' ? (
-                             <motion.div
-                                key="loader"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="flex items-center gap-2"
-                             >
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                <span>Processing</span>
-                             </motion.div>
-                           ) : (
-                             <motion.div
-                                key="idle"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="flex items-center gap-3 z-10"
-                             >
-                                <span>Send Message</span> <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                             </motion.div>
+                        {/* Project Type Grid */}
+                        <div className="space-y-4">
+                          <span className="text-xs uppercase tracking-widest text-neutral-500">Interest</span>
+                          <div className="flex flex-wrap gap-2 sm:gap-3">
+                            {projectTypes.map((type) => (
+                              <button
+                                type="button"
+                                key={type}
+                                onClick={() => setFormState({ ...formState, type: type })}
+                                className={`px-3 py-2 sm:px-4 sm:py-2 text-[10px] sm:text-xs uppercase tracking-wider border transition-all duration-300 ${
+                                  formState.type === type 
+                                  ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' 
+                                  : 'bg-transparent text-neutral-400 border-neutral-800 hover:border-neutral-600'
+                                }`}
+                              >
+                                {type}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Message Input */}
+                        <div className="relative group pt-4">
+                          <textarea 
+                            name="message"
+                            rows={3}
+                            value={formState.message}
+                            onChange={(e) => setFormState({...formState, message: e.target.value})}
+                            placeholder=" "
+                            className={`block py-4 px-0 w-full text-base sm:text-lg text-white bg-transparent border-0 border-b appearance-none focus:outline-none focus:ring-0 transition-colors duration-300 resize-none ${isFocused === 'message' ? 'border-yellow-600' : 'border-neutral-700'}`}
+                            onFocus={() => handleFocus('message')}
+                            onBlur={handleBlur}
+                          />
+                          <label className={`absolute text-sm duration-300 transform -translate-y-6 scale-75 top-7 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 ${isFocused === 'message' || formState.message ? 'text-yellow-600' : 'text-neutral-500'}`}>
+                            Tell me about your project
+                          </label>
+                        </div>
+
+                        {/* Animated Submit Button */}
+                        <button 
+                          disabled={status === 'loading'}
+                          type="submit"
+                          className="group relative w-full flex items-center justify-center gap-4 py-4 sm:py-5 bg-neutral-800 text-white uppercase tracking-[0.2em] text-xs sm:text-sm font-bold overflow-hidden transition-all duration-500 hover:bg-neutral-700 disabled:opacity-70 disabled:cursor-not-allowed mt-auto"
+                        >
+                           <AnimatePresence mode="wait">
+                              {status === 'loading' ? (
+                                 <motion.div
+                                   key="loader"
+                                   initial={{ opacity: 0, y: 10 }}
+                                   animate={{ opacity: 1, y: 0 }}
+                                   exit={{ opacity: 0, y: -10 }}
+                                   className="flex items-center gap-2"
+                                 >
+                                   <Loader2 className="w-4 h-4 animate-spin" />
+                                   <span>Processing</span>
+                                 </motion.div>
+                              ) : (
+                                 <motion.div
+                                   key="idle"
+                                   initial={{ opacity: 0, y: 10 }}
+                                   animate={{ opacity: 1, y: 0 }}
+                                   exit={{ opacity: 0, y: -10 }}
+                                   className="flex items-center gap-3 z-10"
+                                 >
+                                   <span>Send Message</span> <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                 </motion.div>
+                              )}
+                           </AnimatePresence>
+                           
+                           {/* Hover Effect Background */}
+                           {status !== 'loading' && (
+                              <div className="absolute inset-0 bg-white mix-blend-difference transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out z-0 pointer-events-none" />
                            )}
-                         </AnimatePresence>
-                         
-                         {/* Hover Effect Background */}
-                         {status !== 'loading' && (
-                           <div className="absolute inset-0 bg-white mix-blend-difference transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out z-0 pointer-events-none" />
-                         )}
-                      </button>
+                        </button>
 
-                    </form>
-                   </motion.div>
+                      </form>
+                    </motion.div>
                 )}
              </AnimatePresence>
           </motion.div>
         </div>
+        
       </div>
 
       {/* ---------------- FOOTER BAR ---------------- */}

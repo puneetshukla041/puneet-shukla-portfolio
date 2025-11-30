@@ -1,27 +1,38 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image'; // 1. FIX: Added Image import
 import { ArrowUpRight } from 'lucide-react';
 
+// NOTE: In a real Next.js application, for performance, these images should be imported
+// directly rather than referenced as strings, so Next.js can read their dimensions.
+// For now, we manually provide width/height to satisfy the Image component requirement.
+
+// Define default dimensions for Image component usage
+const defaultCardWidth = 800;
+const defaultCardHeight = 1000;
+const defaultGoldenWidth = 1600;
+const defaultGoldenHeight = 900;
+
 const portfolioItems = [
-  { id: 1, src: '/images/card1.jpg', title: 'Urban Shadows', category: 'Street' },
-  { id: 2, src: '/images/card2.jpg', title: 'Silent Noise', category: 'Portrait' },
-  { id: 3, src: '/images/card3.jpg', title: 'Neon Dreams', category: 'Editorial' },
-  { id: 4, src: '/images/card4.jpg', title: 'Abstract Reality', category: 'Fine Art' },
-  { id: 5, src: '/images/card5.jpg', title: 'Motion & Blur', category: 'Experimental' },
-  { id: 6, src: '/images/card6.jpg', title: 'Monochrome Soul', category: 'B&W' },
+  { id: 1, src: '/images/card1.jpg', title: 'Urban Shadows', category: 'Street', width: defaultCardWidth, height: defaultCardHeight },
+  { id: 2, src: '/images/card2.jpg', title: 'Silent Noise', category: 'Portrait', width: defaultCardWidth, height: defaultCardHeight },
+  { id: 3, src: '/images/card3.jpg', title: 'Neon Dreams', category: 'Editorial', width: defaultCardWidth, height: defaultCardHeight },
+  { id: 4, src: '/images/card4.jpg', title: 'Abstract Reality', category: 'Fine Art', width: defaultCardWidth, height: defaultCardHeight },
+  { id: 5, src: '/images/card5.jpg', title: 'Motion & Blur', category: 'Experimental', width: defaultCardWidth, height: defaultCardHeight },
+  { id: 6, src: '/images/card6.jpg', title: 'Monochrome Soul', category: 'B&W', width: defaultCardWidth, height: defaultCardHeight },
 ];
 
 const goldenSeries = [
-  { id: 1, src: '/images/golden1.jpg', title: 'The Golden Hour', subtitle: 'Warmth & Light' },
-  { id: 2, src: '/images/golden2.jpg', title: 'Sun Kissed', subtitle: 'Natural Glow' },
-  { id: 3, src: '/images/golden3.jpg', title: 'Evening Haze', subtitle: 'Atmosphere' },
-  { id: 4, src: '/images/golden4.jpg', title: 'Final Light', subtitle: 'Dusk' },
+  { id: 1, src: '/images/golden1.jpg', title: 'The Golden Hour', subtitle: 'Warmth & Light', width: defaultGoldenWidth, height: defaultGoldenHeight },
+  { id: 2, src: '/images/golden2.jpg', title: 'Sun Kissed', subtitle: 'Natural Glow', width: defaultGoldenWidth, height: defaultGoldenHeight },
+  { id: 3, src: '/images/golden3.jpg', title: 'Evening Haze', subtitle: 'Atmosphere', width: defaultGoldenWidth, height: defaultGoldenHeight },
+  { id: 4, src: '/images/golden4.jpg', title: 'Final Light', subtitle: 'Dusk', width: defaultGoldenWidth, height: defaultGoldenHeight },
 ];
 
 const Section2 = () => {
   return (
-    <section className="relative w-full min-h-screen bg-black text-white py-20 sm:py-32">
+    <section id="section-2" className="relative w-full min-h-screen bg-black text-white py-20 sm:py-32">
       
       {/* ---------------- HEADER ---------------- */}
       <div className="container mx-auto px-6 mb-24 md:mb-32">
@@ -47,9 +58,12 @@ const Section2 = () => {
             <div key={item.id} className="group relative break-inside-avoid cursor-pointer overflow-hidden">
               {/* Image Container */}
               <div className="relative w-full overflow-hidden bg-gray-900 aspect-[3/4] sm:aspect-auto">
-                <img
+                {/* 2. FIX: Replaced <img> with <Image> */}
+                <Image
                   src={item.src}
                   alt={item.title}
+                  width={item.width}
+                  height={item.height}
                   className="w-full h-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-110 opacity-90 group-hover:opacity-100"
                 />
                 
@@ -79,8 +93,9 @@ const Section2 = () => {
       {/* ---------------- DIVIDER / QUOTE ---------------- */}
       <div className="w-full bg-white/5 py-24 sm:py-32 my-24 relative overflow-hidden">
         <div className="container mx-auto px-6 text-center relative z-10">
+          {/* 3. FIX: Escaped double quotes */}
           <p className="text-xl sm:text-3xl md:text-4xl font-light italic text-gray-300 leading-relaxed font-serif">
-            "Photography is the story I fail to put into words."
+            &quot;Photography is the story I fail to put into words.&quot;
           </p>
           <div className="w-24 h-[1px] bg-yellow-500 mx-auto mt-8" />
         </div>
@@ -103,9 +118,12 @@ const Section2 = () => {
           
           {/* Feature 1: Hero Cinematic 16:9 */}
           <div className="group relative w-full aspect-video overflow-hidden shadow-2xl ring-1 ring-white/10">
-            <img 
+            {/* 2. FIX: Replaced <img> with <Image> */}
+            <Image 
               src={goldenSeries[0].src} 
               alt={goldenSeries[0].title}
+              width={goldenSeries[0].width}
+              height={goldenSeries[0].height}
               className="w-full h-full object-cover object-center transition-transform duration-[2000ms] group-hover:scale-105 filter grayscale-[30%] group-hover:grayscale-0"
             />
             {/* Cinematic Gradient Overlay */}
@@ -113,7 +131,7 @@ const Section2 = () => {
             
             <div className="absolute bottom-0 left-0 w-full p-8 md:p-16 flex flex-col items-start justify-end">
                <span className="inline-block px-3 py-1 mb-4 text-[10px] font-bold tracking-[0.2em] text-black bg-yellow-500 uppercase transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                  Featured Shot
+                 Featured Shot
                </span>
               <h4 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700">
                 {goldenSeries[0].title}
@@ -130,9 +148,12 @@ const Section2 = () => {
             {/* Card 2 */}
             <div className="group cursor-pointer flex flex-col gap-4">
               <div className="overflow-hidden aspect-video relative ring-1 ring-white/10 shadow-lg">
-                <img 
+                {/* 2. FIX: Replaced <img> with <Image> */}
+                <Image 
                   src={goldenSeries[1].src} 
                   alt={goldenSeries[1].title}
+                  width={goldenSeries[1].width}
+                  height={goldenSeries[1].height}
                   className="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-110 filter grayscale-[50%] group-hover:grayscale-0"
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
@@ -149,15 +170,18 @@ const Section2 = () => {
             {/* Card 3 */}
             <div className="group cursor-pointer flex flex-col gap-4 md:mt-24">
               <div className="overflow-hidden aspect-video relative ring-1 ring-white/10 shadow-lg">
-                <img 
+                {/* 2. FIX: Replaced <img> with <Image> */}
+                <Image 
                   src={goldenSeries[2].src} 
                   alt={goldenSeries[2].title}
+                  width={goldenSeries[2].width}
+                  height={goldenSeries[2].height}
                   className="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-110 filter grayscale-[50%] group-hover:grayscale-0"
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
               </div>
               <div className="flex justify-between items-baseline border-b border-white/10 pb-4 group-hover:border-yellow-500/50 transition-colors duration-500">
-                 <div>
+                  <div>
                    <h5 className="text-2xl font-bold text-white mb-1 group-hover:text-yellow-400 transition-colors duration-300">{goldenSeries[2].title}</h5>
                    <p className="text-xs text-gray-500 uppercase tracking-widest">{goldenSeries[2].subtitle}</p>
                 </div>
@@ -171,12 +195,15 @@ const Section2 = () => {
           <div className="py-12 border-t border-neutral-900">
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
               <div className="w-full lg:w-3/4 overflow-hidden aspect-video bg-neutral-900 group relative ring-1 ring-white/5">
-                 <img 
-                    src={goldenSeries[3].src} 
-                    alt={goldenSeries[3].title}
-                    className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105 opacity-80 group-hover:opacity-100"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent lg:hidden" />
+                {/* 2. FIX: Replaced <img> with <Image> */}
+                   <Image 
+                      src={goldenSeries[3].src} 
+                      alt={goldenSeries[3].title}
+                      width={goldenSeries[3].width}
+                      height={goldenSeries[3].height}
+                      className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                    />
+                   <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent lg:hidden" />
               </div>
               <div className="w-full lg:w-1/4 space-y-8 relative">
                 {/* Decorative Line */}
