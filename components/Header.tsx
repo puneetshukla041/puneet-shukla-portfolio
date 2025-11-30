@@ -5,14 +5,15 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence, SVGMotionProps, Variants } from 'framer-motion';
-import { Instagram, Linkedin, Github, ChevronRight, Code2, Palette, Menu, X } from 'lucide-react';
+import { Instagram, Linkedin, Github, ChevronRight, Code2, Palette } from 'lucide-react';
 
 interface MenuItem {
   title: string;
   href: string;
+  isButton?: boolean; // Added optional property for styling "Hire Me" differently if needed
 }
 
-// Custom Hamburger Icon Component for smooth SVG animation
+// Custom Hamburger Icon Component
 const Path = (props: SVGMotionProps<SVGPathElement>) => (
   <motion.path
     fill="transparent"
@@ -36,10 +37,10 @@ const Header = () => {
   const [activeSection, setActiveSection] = useState('Home');
   const [isSwitching, setIsSwitching] = useState(false);
   
-  // Visibility State: Defaults to hidden on developer page, visible otherwise
-  const [isVisible, setIsVisible] = useState(() => !isDeveloperMode);
+  // Visibility State
+  const [isVisible, setIsVisible] = useState(true); // Default to true, adjust in scroll logic
 
-  // Toggle Logic with Animation Delay
+  // Toggle Logic
   const handleToggle = () => {
     if (isSwitching) return;
     setIsSwitching(true);
@@ -54,23 +55,55 @@ const Header = () => {
     }, 400); 
   };
 
-  // ScrollSpy Logic
+  // --- UPDATED MENU DATA ---
+  const developerMenuItems: MenuItem[] = [
+    { title: 'Home', href: '#section-1' },
+    { title: 'Experience', href: '#section-2' },
+    { title: 'Projects', href: '#section-3' },
+    { title: 'Skills', href: '#section-4' },
+    { title: 'Hire Me', href: '#section-5', isButton: true },
+  ];
+
+  const contentMenuItems: MenuItem[] = [
+    { title: 'Home', href: '#section-1' },
+    { title: 'Gallery', href: '#section-2' },
+    { title: 'Films', href: '#section-3' }, 
+    { title: 'Contact Us', href: '#section-5' },
+  ];
+
+  const currentMenuItems = isDeveloperMode ? developerMenuItems : contentMenuItems;
+
+  // --- UPDATED SCROLLSPY LOGIC ---
   useEffect(() => {
-    if (isDeveloperMode) return;
-    const sections = [
-      { id: 'section-1', name: 'Home' },
-      { id: 'section-2', name: 'Gallery' },
-      { id: 'section-3', name: 'Films' },
-      { id: 'section-5', name: 'Contact Us' }
-    ];
+    // Define which sections to track based on the current mode
+    let sections = [];
+
+    if (isDeveloperMode) {
+      sections = [
+        { id: 'section-1', name: 'Home' },
+        { id: 'section-2', name: 'Experience' },
+        { id: 'section-3', name: 'Projects' },
+        { id: 'section-4', name: 'Skills' },
+        { id: 'section-5', name: 'Hire Me' }
+      ];
+    } else {
+      sections = [
+        { id: 'section-1', name: 'Home' },
+        { id: 'section-2', name: 'Gallery' },
+        { id: 'section-3', name: 'Films' },
+        { id: 'section-5', name: 'Contact Us' }
+      ];
+    }
 
     const handleScrollSpy = () => {
       const scrollPosition = window.scrollY + 150;
+      
       for (const section of sections) {
         const element = document.getElementById(section.id);
         if (element) {
           const offsetTop = element.offsetTop;
           const offsetBottom = offsetTop + element.offsetHeight;
+          
           if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
             setActiveSection(section.name);
             break;
@@ -78,9 +111,11 @@ const Header = () => {
         }
       }
     };
+
     window.addEventListener('scroll', handleScrollSpy);
+    handleScrollSpy(); // Initial check
     return () => window.removeEventListener('scroll', handleScrollSpy);
-  }, [pathname, isDeveloperMode]);
+  }, [pathname, isDeveloperMode]); // Re-run when mode changes
 
   // Smooth Scroll Handler
   const handleLinkClick = (e: React.MouseEvent, item: MenuItem) => {
@@ -89,6 +124,7 @@ const Header = () => {
       const element = document.getElementById(item.href.substring(1));
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
+        // Manually set active section immediately for better UX
         setActiveSection(item.title);
       }
     }
@@ -99,47 +135,24 @@ const Header = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
-      // 1. Sticky Header Logic
       setSticky(currentScrollY > 20);
 
-      // 2. Developer Page Visibility Logic
+      // Optional: Logic to hide header on Dev hero section if desired
       if (isDeveloperMode) {
-        // Hide header if we are in the top half of the first screen (Hero Section)
-        // Show header once we scroll past that point
         const threshold = window.innerHeight / 2;
-        setIsVisible(currentScrollY > threshold);
+        setIsVisible(currentScrollY > threshold || currentScrollY < 50); // Show at very top or after scroll
       } else {
-        // Always show header on Content pages
         setIsVisible(true);
       }
     };
 
-    // Run immediately to set initial state correctly
     handleScroll();
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isDeveloperMode]);
 
-  // Menu Data
-  const developerMenuItems: MenuItem[] = [
-    { title: 'Home', href: '/' },
-    { title: 'Gallery', href: '/gallery' },
-    { title: 'Films', href: '/films' },
-    { title: 'About', href: '/about' },
-    { title: 'Contact', href: '/contact' },
-  ];
-  const contentMenuItems: MenuItem[] = [
-    { title: 'Home', href: '#section-1' },
-    { title: 'Gallery', href: '#section-2' },
-    { title: 'Films', href: '#section-3' }, 
-    { title: 'Contact Us', href: '#section-5' },
-  ];
-  const currentMenuItems = !isDeveloperMode ? contentMenuItems : developerMenuItems;
-
   const isItemActive = (item: MenuItem) => {
-    return !isDeveloperMode ? activeSection === item.title : pathname === item.href;
+    return activeSection === item.title;
   };
 
   // --- Animation Variants ---
@@ -194,12 +207,12 @@ const Header = () => {
                     onClick={(e) => handleLinkClick(e, item)}
                     className={`relative px-6 py-2 rounded-full text-sm font-medium transition-colors duration-300 cursor-pointer ${
                       isActive ? 'text-white' : 'text-white/60 hover:text-white'
-                    }`}
+                    } ${item.isButton ? 'font-bold tracking-wide' : ''}`}
                   >
                     {isActive && (
                       <motion.div
                         layoutId="nav-pill"
-                        className="absolute inset-0 bg-white/10 rounded-full shadow-sm border border-white/5"
+                        className={`absolute inset-0 rounded-full shadow-sm border border-white/5 ${item.isButton ? 'bg-blue-600/80' : 'bg-white/10'}`}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                       />
                     )}
@@ -367,10 +380,10 @@ const Header = () => {
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors border border-white/10 ${
                         isDeveloperMode ? 'bg-blue-600/20 text-blue-400' : 'bg-white/10 text-white/50'
                       }`}>
-                         {isDeveloperMode ? <Palette size={20} /> : <Code2 size={20} />}
+                          {isDeveloperMode ? <Palette size={20} /> : <Code2 size={20} />}
                       </div>
                       <span className="text-sm font-medium text-white/90">
-                         {isDeveloperMode ? "Switch to Content Mode" : "Switch to Developer Mode"}
+                          {isDeveloperMode ? "Switch to Content Mode" : "Switch to Developer Mode"}
                       </span>
                     </div>
                     
