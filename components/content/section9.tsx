@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Volume2, VolumeX, Sunrise, Wind } from 'lucide-react';
 
-const SectionBombay = () => {
+const SectionDreams = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
@@ -119,7 +119,7 @@ const SectionBombay = () => {
 
   return (
     <section
-      id="section-bombay"
+      id="section-dreams"
       ref={sectionRef}
       // LAYOUT: Mobile = Col, Desktop = Row Reverse (Text Left, Video Right)
       className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col md:flex-row-reverse"
@@ -161,14 +161,21 @@ const SectionBombay = () => {
             
             <video
               ref={videoRef}
-              style={{ transform: 'rotate(-90deg)' }}
-              className="w-full h-full object-cover transform-gpu"
+              // FIX: 
+              // 1. translate(-50%, -50%) centers it.
+              // 2. rotate(-90deg) flips the 9:16 video to be horizontal.
+              // 3. scale(1.778) expands it because object-contain made it small to fit the height. 
+              //    16/9 is approx 1.7777. This makes it fill the container perfectly.
+              style={{ transform: 'translate(-50%, -50%) rotate(-90deg) scale(1.778)' }}
+              
+              // Use object-contain so we get the FULL video frame (no cropping)
+              className="absolute top-1/2 left-1/2 w-full h-full object-contain transform-gpu"
+              
               loop
               playsInline
               preload="auto"
               onCanPlayThrough={handleVideoLoad}
             >
-              {/* Updated Path */}
               <source src="/videos/herosix.mp4" type="video/mp4" />
             </video>
 
@@ -228,16 +235,16 @@ const SectionBombay = () => {
           
           {/* Tagline */}
           <div className="flex flex-col items-center md:items-start gap-3 opacity-0 animate-cinematic-fade" style={{ animationDelay: '0.2s' }}>
-             <div className="flex items-center gap-2 text-purple-400/80">
+              <div className="flex items-center gap-2 text-purple-400/80">
                 <Wind className="w-3 h-3" />
                 <span className="text-[9px] font-mono tracking-[0.3em] uppercase">The Uphill Battle</span>
-             </div>
-             <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white tracking-tight leading-[0.9]">
+              </div>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white tracking-tight leading-[0.9]">
                Dreams <br/>
                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-pink-500">
-                 Vs. Everyone
+                  Vs. Everyone
                </span>
-             </h2>
+              </h2>
           </div>
 
           {/* Divider */}
@@ -254,8 +261,8 @@ const SectionBombay = () => {
                 <Sunrise className="w-3 h-3" />
                 <span className="text-[9px] tracking-widest uppercase font-bold">Inner Light</span>
             </div>
-             <div className="w-1 h-1 bg-neutral-800 rounded-full" />
-             <span className="text-[9px] text-neutral-700 tracking-widest uppercase font-bold">Resilience</span>
+              <div className="w-1 h-1 bg-neutral-800 rounded-full" />
+              <span className="text-[9px] text-neutral-700 tracking-widest uppercase font-bold">Resilience</span>
           </div>
           
         </div>
@@ -290,4 +297,4 @@ const SectionBombay = () => {
   );
 };
 
-export default SectionBombay;
+export default SectionDreams;

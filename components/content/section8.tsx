@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Volume2, VolumeX, Sunrise, Wind } from 'lucide-react';
+import { Volume2, VolumeX, Cloud, Palette, Sun } from 'lucide-react';
 
-const SectionDreams = () => {
+const SectionNature = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
 
-  // TS FIX: Added <HTMLVideoElement> and <HTMLElement> to refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -34,16 +33,8 @@ const SectionDreams = () => {
   // ---------------------------------------------------------------------------
   useEffect(() => {
     if (!isLoading) {
-      // START: Show after 4 seconds
-      const startTimer = setTimeout(() => {
-        setShowIntro(true);
-      }, 4000);
-
-      // END: Hide after 6 seconds (4s start + 2s duration)
-      const endTimer = setTimeout(() => {
-        setShowIntro(false);
-      }, 6000);
-
+      const startTimer = setTimeout(() => setShowIntro(true), 4000);
+      const endTimer = setTimeout(() => setShowIntro(false), 6000);
       return () => {
         clearTimeout(startTimer);
         clearTimeout(endTimer);
@@ -119,10 +110,10 @@ const SectionDreams = () => {
 
   return (
     <section
-      id="section-dreams"
+      id="section-nature"
       ref={sectionRef}
-      // LAYOUT: Mobile = Col, Desktop = Row Reverse (Text Left, Video Right)
-      className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col md:flex-row-reverse"
+      // LAYOUT: Removed 'flex-row-reverse' to keep Video on LEFT, Text on RIGHT
+      className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col md:flex-row"
     >
       {/* ---------------------------------------------------------------------------
           LOADER OVERLAY
@@ -136,51 +127,45 @@ const SectionDreams = () => {
       >
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
-            <Sunrise className="w-10 h-10 text-neutral-600 animate-pulse" />
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-ping" />
+            <Sun className="w-10 h-10 text-orange-500 animate-spin-slow" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full animate-ping" />
           </div>
           <div className="h-[2px] w-48 bg-neutral-900 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-neutral-500 via-white to-neutral-500 transition-all duration-200"
+              className="h-full bg-gradient-to-r from-orange-500 via-yellow-200 to-blue-500 transition-all duration-200"
               style={{ width: `${progress}%` }}
             />
           </div>
           <span className="text-[10px] font-mono tracking-[0.3em] text-neutral-500 uppercase">
-            Igniting Vision {progress}%
+            Painting Sky {progress}%
           </span>
         </div>
       </div>
 
       {/* ---------------------------------------------------------------------------
-          VIDEO PANEL (RIGHT SIDE ON DESKTOP)
+          VIDEO PANEL (LEFT SIDE)
           --------------------------------------------------------------------------- */}
-      <div className="w-full md:flex-1 bg-black flex items-center justify-center relative border-b md:border-b-0 md:border-l border-white/10">
+      <div className="w-full md:flex-1 bg-black flex items-center justify-center relative border-b md:border-b-0 md:border-r border-white/10">
         
         {/* THE 16:9 CONTAINER */}
         <div className="relative w-full aspect-video group bg-neutral-900 overflow-hidden shadow-2xl">
             
             <video
               ref={videoRef}
-              // FIX: 
-              // 1. translate(-50%, -50%) centers it.
-              // 2. rotate(-90deg) flips the 9:16 video to be horizontal.
-              // 3. scale(1.778) expands it because object-contain made it small to fit the height. 
-              //    16/9 is approx 1.7777. This makes it fill the container perfectly.
+              // APPLIED FIX: Centers, Rotates 90deg, and Scales to fill 16:9 width
               style={{ transform: 'translate(-50%, -50%) rotate(-90deg) scale(1.778)' }}
-              
-              // Use object-contain so we get the FULL video frame (no cropping)
               className="absolute top-1/2 left-1/2 w-full h-full object-contain transform-gpu"
-              
               loop
               playsInline
               preload="auto"
               onCanPlayThrough={handleVideoLoad}
             >
-              <source src="/videos/herosix.mp4" type="video/mp4" />
+              {/* Updated Path */}
+              <source src="/videos/herofive.mp4" type="video/mp4" />
             </video>
 
-            {/* Cinematic Overlay (Cool Morning Blue) */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-blue-900/10 to-black/30 pointer-events-none" />
+            {/* Cinematic Overlay (Warm/Sky Gradient) */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-orange-900/10 to-black/30 pointer-events-none" />
 
             {/* DIRECTOR INTRO */}
             <div
@@ -202,11 +187,7 @@ const SectionDreams = () => {
 
             {/* CONTROLS */}
             {!isLoading && (
-              <div className="absolute bottom-4 right-4 z-40 flex items-center gap-3 animate-fade-in">
-                <div className="text-right hidden sm:block">
-                    <p className="text-[8px] font-bold tracking-widest text-white/90 uppercase">Soundscape</p>
-                    <p className="text-[8px] text-white/60 font-mono">DOLBY ATMOS</p>
-                </div>
+              <div className="absolute bottom-4 left-4 z-40 flex items-center gap-3 animate-fade-in">
                 <button
                   onClick={toggleSound}
                   className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/30 transition-all duration-300"
@@ -214,35 +195,39 @@ const SectionDreams = () => {
                   {isMuted ? (
                     <VolumeX className="w-4 h-4 text-white/70" />
                   ) : (
-                    <Volume2 className="w-4 h-4 text-white hover:text-blue-400" />
+                    <Volume2 className="w-4 h-4 text-white hover:text-orange-400" />
                   )}
                 </button>
+                <div className="text-left hidden sm:block">
+                    <p className="text-[8px] font-bold tracking-widest text-white/90 uppercase">Ambient</p>
+                    <p className="text-[8px] text-white/60 font-mono">STEREO</p>
+                </div>
               </div>
             )}
         </div>
       </div>
 
       {/* ---------------------------------------------------------------------------
-          TEXT PANEL (LEFT SIDE ON DESKTOP)
+          TEXT PANEL (RIGHT SIDE)
           --------------------------------------------------------------------------- */}
       <div className="w-full md:w-[40%] lg:w-[35%] bg-black flex flex-col items-center justify-center p-8 md:p-12 z-20 relative overflow-hidden">
         
         {/* Background Atmosphere */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-purple-600/10 blur-[90px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-orange-600/10 blur-[90px] rounded-full pointer-events-none" />
         
         {/* Content */}
         <div className="relative max-w-sm text-center md:text-left space-y-8 md:space-y-12">
           
           {/* Tagline */}
           <div className="flex flex-col items-center md:items-start gap-3 opacity-0 animate-cinematic-fade" style={{ animationDelay: '0.2s' }}>
-              <div className="flex items-center gap-2 text-purple-400/80">
-                <Wind className="w-3 h-3" />
-                <span className="text-[9px] font-mono tracking-[0.3em] uppercase">The Uphill Battle</span>
+              <div className="flex items-center gap-2 text-orange-400/80">
+                <Cloud className="w-3 h-3" />
+                <span className="text-[9px] font-mono tracking-[0.3em] uppercase">Ethereal Canvas</span>
               </div>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white tracking-tight leading-[0.9]">
-               Dreams <br/>
-               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-pink-500">
-                  Vs. Everyone
+               Nature's <br/>
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-200 via-white to-blue-400">
+                  Palette
                </span>
               </h2>
           </div>
@@ -252,17 +237,17 @@ const SectionDreams = () => {
 
           {/* Body */}
           <p className="text-sm md:text-base font-light leading-relaxed text-neutral-400 opacity-0 animate-cinematic-up font-serif italic" style={{ animationDelay: '0.8s' }}>
-            &quot;They told him to be realistic. They told him to follow the path. But the vision was too clear to ignore. Standing alone against the tide, it&apos;s not just about proving them wrong—it&apos;s about proving yourself right.&quot;
+            &quot;The sky doesn't ask for attention, yet it commands it. In the gradient of the horizon, we find the colors of our own emotions—ever-changing, infinite, and beautifully untamed.&quot;
           </p>
 
           {/* Tech Specs */}
           <div className="flex items-center justify-center md:justify-start gap-4 opacity-0 animate-cinematic-fade" style={{ animationDelay: '1.2s' }}>
             <div className="flex items-center gap-2 text-neutral-700">
-                <Sunrise className="w-3 h-3" />
-                <span className="text-[9px] tracking-widest uppercase font-bold">Inner Light</span>
+                <Palette className="w-3 h-3" />
+                <span className="text-[9px] tracking-widest uppercase font-bold">Vibrance</span>
             </div>
               <div className="w-1 h-1 bg-neutral-800 rounded-full" />
-              <span className="text-[9px] text-neutral-700 tracking-widest uppercase font-bold">Resilience</span>
+              <span className="text-[9px] text-neutral-700 tracking-widest uppercase font-bold">Horizon</span>
           </div>
           
         </div>
@@ -288,6 +273,11 @@ const SectionDreams = () => {
           0% { opacity: 0; height: 0px; }
           100% { opacity: 1; } 
         }
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin-slow { animation: spin-slow 12s linear infinite; }
         .animate-fade-in { animation: fade-in-slow 1s ease-out forwards; }
         .animate-cinematic-up { animation: cinematic-up 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-cinematic-fade { animation: cinematic-fade 2s ease-in-out forwards; }
@@ -297,4 +287,4 @@ const SectionDreams = () => {
   );
 };
 
-export default SectionDreams;
+export default SectionNature;

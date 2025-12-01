@@ -8,7 +8,7 @@ import Section5 from '@/components/content/section5';
 import Section6 from '@/components/content/section6';
 import Section7 from '@/components/content/section7';
 import Section8 from '@/components/content/section8';
-
+import Section9 from '@/components/content/section9';
 const Page = () => {
   return (
     <main className="relative">
@@ -45,6 +45,9 @@ const Page = () => {
 
       <section id="section-3">
         <Section8 />
+      </section>
+            <section id="section-3">
+        <Section9 />
       </section>
 
       <Section7/>
