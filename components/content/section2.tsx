@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
@@ -163,10 +164,9 @@ const goldenSeries: PortfolioItem[] = [
 interface GridItemProps {
   item: PortfolioItem;
   onClick: (item: PortfolioItem) => void;
-  index: number;
 }
 
-const GridItem = ({ item, onClick, index }: GridItemProps) => {
+const GridItem = ({ item, onClick }: GridItemProps) => {
   return (
     <div 
       onClick={() => onClick(item)}
@@ -460,7 +460,6 @@ const Section2 = () => {
             <GridItem 
               key={item.id} 
               item={item} 
-              index={index} 
               onClick={setSelectedImage} 
             />
           ))}
@@ -534,7 +533,8 @@ const Section2 = () => {
                />
                
                <div className="absolute bottom-8 left-8 z-20 transition-transform duration-500 group-hover:-translate-y-2">
-                  <p className="text-xs font-bold text-yellow-500 uppercase tracking-widest mb-2">Editor's Pick</p>
+                  {/* Fixed ' to &apos; here */}
+                  <p className="text-xs font-bold text-yellow-500 uppercase tracking-widest mb-2">Editor&apos;s Pick</p>
                   <h3 className="text-3xl md:text-4xl font-semibold text-white mb-1">{goldenSeries[0].title}</h3>
                   <p className="text-sm text-white/70 font-light">{goldenSeries[0].subtitle}</p>
                </div>
