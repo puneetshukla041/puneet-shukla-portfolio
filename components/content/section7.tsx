@@ -121,8 +121,9 @@ const SectionBombay = () => {
     <section
       id="section-bombay"
       ref={sectionRef}
-      // LAYOUT: Mobile = Col, Desktop = Row Reverse (Text Left, Video Right)
-      className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col md:flex-row-reverse"
+      // LAYOUT: Mobile = Col, Desktop = Row (Video Left, Text Right)
+      // Changed md:flex-row-reverse to md:flex-row
+      className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col md:flex-row"
     >
       {/* ---------------------------------------------------------------------------
           LOADER OVERLAY
@@ -152,24 +153,22 @@ const SectionBombay = () => {
       </div>
 
       {/* ---------------------------------------------------------------------------
-          VIDEO PANEL (RIGHT SIDE ON DESKTOP)
+          VIDEO PANEL (LEFT SIDE ON DESKTOP)
           --------------------------------------------------------------------------- */}
-      <div className="w-full md:flex-1 bg-black flex items-center justify-center relative border-b md:border-b-0 md:border-l border-white/10">
+      <div className="w-full md:flex-1 bg-black flex items-center justify-center relative border-b md:border-b-0 md:border-r border-white/10">
         
         {/* THE 16:9 CONTAINER */}
         <div className="relative w-full aspect-video group bg-neutral-900 overflow-hidden shadow-2xl">
             
             <video
               ref={videoRef}
-              // Rotated left (-90deg) as requested
-              style={{ transform: 'rotate(-90deg)' }}
+              // Removed rotation to ensure standard 16:9 landscape format
               className="w-full h-full object-cover transform-gpu"
               loop
               playsInline
               preload="auto"
               onCanPlayThrough={handleVideoLoad}
             >
-              {/* Using the last requested video path */}
               <source src="/videos/herosix.mp4" type="video/mp4" />
             </video>
 
@@ -217,7 +216,7 @@ const SectionBombay = () => {
       </div>
 
       {/* ---------------------------------------------------------------------------
-          TEXT PANEL (LEFT SIDE ON DESKTOP)
+          TEXT PANEL (RIGHT SIDE ON DESKTOP)
           --------------------------------------------------------------------------- */}
       <div className="w-full md:w-[40%] lg:w-[35%] bg-black flex flex-col items-center justify-center p-8 md:p-12 z-20 relative overflow-hidden">
         
