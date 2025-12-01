@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, Variants } from 'framer-motion';
 import Image from 'next/image';
 
@@ -137,27 +137,34 @@ const rawTimelineData: TimelineData[] = [
 
 const timelineData = [...rawTimelineData].reverse();
 
-// --- SCRAMBLE TEXT COMPONENT ---
-const ScrambleText = ({ text, className }: { text: string, className?: string }) => {
+// --- SCRAMBLE TEXT COMPONENT (Updated to use trigger prop) ---
+const ScrambleText = ({ text, className, trigger }: { text: string, className?: string, trigger: boolean }) => {
   const [display, setDisplay] = useState(text);
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
 
-  const scramble = () => {
-    let iterations = 0;
-    const interval = setInterval(() => {
-      setDisplay(
-        text.split("").map((letter, index) => {
-          if (index < iterations) return text[index];
-          return chars[Math.floor(Math.random() * chars.length)];
-        }).join("")
-      );
-      if (iterations >= text.length) clearInterval(interval);
-      iterations += 1 / 3;
-    }, 30);
-  };
+  useEffect(() => {
+    if (trigger) {
+        let iterations = 0;
+        const interval = setInterval(() => {
+        setDisplay(
+            text.split("").map((letter, index) => {
+            if (index < iterations) return text[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+            }).join("")
+        );
+        if (iterations >= text.length) clearInterval(interval);
+        iterations += 1 / 3;
+        }, 30);
+        return () => clearInterval(interval);
+    } else {
+        // Optional: Reset text when not hovering, or keep it static. 
+        // We keep it static for better UX, resetting only on re-trigger.
+        setDisplay(text);
+    }
+  }, [trigger, text]);
 
   return (
-    <span onMouseEnter={scramble} className={`cursor-default ${className}`}>
+    <span className={`cursor-default ${className}`}>
       {display}
     </span>
   );
@@ -238,6 +245,9 @@ const TimelineCard = ({ data, index, isLeft }: { data: TimelineData, index: numb
   const y = useMotionValue(0);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  
+  // New state to track if the card is hovered
+  const [isHovered, setIsHovered] = useState(false);
 
   const rotateX = useTransform(y, [-0.5, 0.5], [5, -5]); // Tilt Up/Down
   const rotateY = useTransform(x, [-0.5, 0.5], [-5, 5]); // Tilt Left/Right
@@ -252,7 +262,12 @@ const TimelineCard = ({ data, index, isLeft }: { data: TimelineData, index: numb
     mouseY.set(clientY - top);
   }
 
+  function handleMouseEnter() {
+    setIsHovered(true);
+  }
+
   const handleMouseLeave = () => {
+    setIsHovered(false);
     x.set(0);
     y.set(0);
     mouseX.set(0);
@@ -296,10 +311,11 @@ const TimelineCard = ({ data, index, isLeft }: { data: TimelineData, index: numb
         <motion.div 
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
             className="relative group/card"
+            onMouseEnter={handleMouseEnter}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
         >
-            {/* HOLOGRAPHIC BORDER GLOW - Fixed: Use motion.div here */}
+            {/* HOLOGRAPHIC BORDER GLOW - (Fixed from previous build error: Use motion.div) */}
             <motion.div 
                 className="absolute -inset-[1px] rounded-2xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" 
                 style={{
@@ -331,7 +347,8 @@ const TimelineCard = ({ data, index, isLeft }: { data: TimelineData, index: numb
                              </div>
                              <div>
                                 <h3 className={`text-xl font-bold text-white group-hover/card:text-${data.theme.name}-200 transition-colors`}>
-                                    <ScrambleText text={data.role} />
+                                    {/* Trigger prop passed here */}
+                                    <ScrambleText text={data.role} trigger={isHovered} />
                                 </h3>
                                 <div className={`text-sm font-medium tracking-wide ${data.theme.primary} flex items-center gap-2`}>
                                     {data.company}

@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, FileJson, CheckCircle2, Loader2, 
   Search, GitGraph, Files, Settings, MoreHorizontal, 
   X, Minus, ChevronRight, ChevronDown, 
   Hash, LayoutTemplate, Bug, Menu, AlertCircle, 
-  ArrowDown, ArrowRight, Save, Copy, Terminal, Command
+  ArrowRight
 } from 'lucide-react';
 
 // --- Types & Constants ---
@@ -152,7 +152,7 @@ const Section1 = () => {
   const [activeTab, setActiveTab] = useState<TabName>('developer.ts');
   const [openTabs, setOpenTabs] = useState<TabName[]>(['developer.ts', 'styles.css', 'README.md']);
   const [activeView, setActiveView] = useState<ViewName>('EXPLORER');
-  const [sidebarWidth, setSidebarWidth] = useState(260);
+  const [sidebarWidth] = useState(260); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   // Terminal State
@@ -206,6 +206,7 @@ const Section1 = () => {
     } else {
         setIsTypingComplete(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   // --- Handlers ---
@@ -376,7 +377,15 @@ const Section1 = () => {
   };
 
   return (
-    <section className="relative w-full h-screen bg-[#000000] text-[#cccccc] flex overflow-hidden font-sans selection:bg-[#264f78] selection:text-white">
+    <section className="relative w-full h-screen bg-[#030303] text-[#cccccc] flex overflow-hidden font-sans selection:bg-[#264f78] selection:text-white">
+      
+      {/* --- ADDED: Matching Cyberpunk Grid Background from Section 2 --- */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none perspective-500 z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+        {/* Glow Orbs - adjusted for top section */}
+        <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-cyan-900/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] bg-indigo-900/10 rounded-full blur-[120px]" />
+      </div>
       
       {/* 1. ACTIVITY BAR (Leftmost) */}
       <div className="hidden md:flex flex-col w-12 bg-[#000000] border-r border-[#333] items-center py-3 gap-4 z-30 select-none">
@@ -409,8 +418,8 @@ const Section1 = () => {
         {renderSidebarContent()}
       </motion.div>
 
-      {/* 3. MAIN EDITOR AREA */}
-      <div className="flex-1 flex flex-col h-full relative bg-[#1e1e1e] z-10 min-w-0">
+      {/* 3. MAIN EDITOR AREA - Updated background to be slightly transparent to show grid */}
+      <div className="flex-1 flex flex-col h-full relative bg-[#1e1e1e]/90 backdrop-blur-sm z-10 min-w-0">
         
         {/* TABS BAR */}
         <div className="flex bg-[#000000] h-9 items-center overflow-x-auto no-scrollbar border-b border-[#333] select-none">
@@ -423,7 +432,7 @@ const Section1 = () => {
                key={tabName}
                onClick={() => setActiveTab(tabName)}
                className={`group flex items-center gap-2 px-3 h-full text-[13px] cursor-pointer border-r border-[#333] min-w-fit transition-colors relative
-                 ${activeTab === tabName ? 'bg-[#1e1e1e] text-white border-t-2 border-t-[#007acc]' : 'bg-[#000000] text-[#999] border-t-2 border-t-transparent hover:bg-[#1e1e1e]'}`}
+                 ${activeTab === tabName ? 'bg-[#1e1e1e]/50 text-white border-t-2 border-t-[#007acc]' : 'bg-[#000000] text-[#999] border-t-2 border-t-transparent hover:bg-[#1e1e1e]/50'}`}
              >
                 {tabName === 'developer.ts' && <FileJson size={14} className="text-[#f1e05a]" />}
                 {tabName === 'styles.css' && <Hash size={14} className="text-[#569cd6]" />}
@@ -444,9 +453,9 @@ const Section1 = () => {
         </div>
 
         {/* EDITOR CONTENT */}
-        <div className="flex-1 relative flex overflow-hidden bg-[#1e1e1e]">
+        <div className="flex-1 relative flex overflow-hidden bg-[#1e1e1e]/0">
           {/* Line Numbers */}
-          <div className="hidden sm:block w-12 pr-4 pt-4 text-[#6e7681] text-[13px] font-mono text-right select-none bg-[#1e1e1e]">
+          <div className="hidden sm:block w-12 pr-4 pt-4 text-[#6e7681] text-[13px] font-mono text-right select-none bg-[#1e1e1e]/50">
             {/* Auto-generated based on lines */}
           </div>
 
@@ -464,7 +473,7 @@ const Section1 = () => {
           </div>
           
           {/* Minimap (Visual Only) */}
-          <div className="hidden lg:block w-20 bg-[#1e1e1e] overflow-hidden opacity-30 select-none pointer-events-none absolute right-0 top-0 bottom-0">
+          <div className="hidden lg:block w-20 bg-[#1e1e1e]/30 overflow-hidden opacity-30 select-none pointer-events-none absolute right-0 top-0 bottom-0 border-l border-[#333]/50">
               <div className="transform scale-[0.1] origin-top-left p-2">
                  <pre className="text-white">{FILES_CONTENT[activeTab]}</pre>
               </div>
