@@ -18,6 +18,7 @@ const Page = () => {
       <div id="section-2">
         <Section2 />
       </div>
+    
    
       {/* Placeholder IDs for future sections to prevent errors if clicked
           (You can replace these divs with the actual components later) */}

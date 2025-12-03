@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState } from 'react';
 import { 
   Copy, 
@@ -353,32 +352,30 @@ const CredentialBox = () => {
 };
 
 export default function Section2() {
-  
+    
   return (
     <div className="min-h-screen font-sans antialiased overflow-hidden selection:bg-cyan-500/30 selection:text-white pb-32">
       <style>{customStyles}</style>
-
+    
       {/* Cinematic Layers */}
       <div className="cinematic-grain"></div>
       <div className="scanlines"></div>
-      
+    
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
           <div className="nebula-glow top-[-10%] right-[-10%] bg-blue-500/10"></div>
           <div className="nebula-glow bottom-[-10%] left-[-10%] bg-purple-500/10" style={{ animationDelay: '-10s' }}></div>
       </div>
-
+    
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
-
+    
         {/* --- HEADER --- */}
         <header className="mb-32 flex justify-between items-end border-b border-white/10 pb-6">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
-              <span className="text-[10px] font-mono text-green-500 uppercase tracking-widest">System Online</span>
+            
+       
             </div>
-            <h1 className="text-[10px] font-mono text-white/40 uppercase tracking-[0.4em] mb-2">
-              Portfolio_SEC_03 // Enterprise_V1
-            </h1>
+        
             <h2 className="text-4xl font-bold tracking-tighter text-white title-cinematic">
               SELECTED WORKS
             </h2>
