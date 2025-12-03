@@ -278,7 +278,7 @@ const TECH_STACK_CORE = [
 ];
 
 const TECH_STACK_INFRA = [
-  "AWS S3", "AWS SES", "MongoDB", "Redis"
+  "AWS S3", "AWS SES", "MongoDB"
 ];
 
 const TECH_STACK_OPS = [
