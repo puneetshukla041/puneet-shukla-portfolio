@@ -40,29 +40,23 @@ const useTime = () => {
   }, []);
   return time;
 };
-
 // 2. 3D Tilt Card (Adapted to match SelectedWorks aesthetic)
 const TiltCard = ({ children, className = "", onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  
   const mouseX = useSpring(x, { stiffness: 500, damping: 100 });
   const mouseY = useSpring(y, { stiffness: 500, damping: 100 });
-
   const rotateX = useTransform(mouseY, [-0.5, 0.5], ["2deg", "-2deg"]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-2deg", "2deg"]);
-
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-2deg", "2deg"])
   function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
     const { left, top, width, height } = currentTarget.getBoundingClientRect();
     x.set((clientX - left) / width - 0.5);
     y.set((clientY - top) / height - 0.5);
   }
-
   function handleMouseLeave() {
     x.set(0);
     y.set(0);
   }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -93,7 +87,6 @@ const TiltCard = ({ children, className = "", onClick }: { children: React.React
     </motion.div>
   );
 };
-
 // 3. Shimmer Social Pill (Retained & Styled)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SocialPill = ({ icon: Icon, label, href }: { icon: any, label: string, href: string }) => (
@@ -145,10 +138,10 @@ export default function HireMeSection() {
 
         {/* --- CONTENT COLUMNS (Matches SelectedWorks) --- */}
         <div className="flex flex-col lg:flex-row gap-8 md:gap-16 lg:gap-24 items-start">
-          
+
           {/* Left Column: Narrative & Primary Action (5/12 width equivalent) */}
           <div className="w-full lg:w-5/12 space-y-8 md:space-y-12 order-1">
-            
+
             {/* Intro Text */}
             <div className="space-y-4">
                <p className="text-base md:text-lg text-zinc-400 leading-relaxed font-light">
@@ -198,7 +191,6 @@ export default function HireMeSection() {
                       View professional history & stack.
                     </p>
                   </div>
-                  
                   <div className="flex items-center justify-between w-full pt-4 border-t border-white/5 mt-4 text-xs font-medium text-zinc-400 group-hover:text-white transition-colors">
                     <span>Download PDF</span>
                     <ArrowUpRight size={14} />
